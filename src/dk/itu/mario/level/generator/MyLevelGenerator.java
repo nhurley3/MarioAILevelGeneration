@@ -25,7 +25,7 @@ public class MyLevelGenerator extends CustomizedLevelGenerator implements LevelG
 //			System.out.println();
 //			head = head.getNextNode();
 //		}
-		LevelInterface level = new MyLevel(320,15,new Random().nextLong(),1,LevelInterface.TYPE_UNDERGROUND,playerMetrics);
+		LevelInterface level = new MyLevel(320,15,new Random().nextLong(),1,LevelInterface.TYPE_UNDERGROUND,playerMetrics, false);
 		return level;
 	}
 

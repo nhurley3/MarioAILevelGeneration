@@ -57,6 +57,22 @@ public class GamePlay implements Serializable {
 	public int CannonBallKilled; //number of Cannon Ball Mario killed
 	public int JumpFlowersKilled; //number of Jump Flower Mario killed
 	public int ChompFlowersKilled; //number of Chomp Flower Mario killed
+	//Stats we added
+	public int numRecorded; //The number of games that have been recorded within the sum of this data
+	//Record the number of these we have seen
+	public int numGoombas;
+	public int numRedTurtles;
+	public int numGreenTurtles;
+	public int numArmoredTurtles;
+	public int numCannonBalls;
+	public int numFlowers;
+	public double percentGoombasKilled;
+	public double percentRedTurtlesKilled;
+	public double percentGreenTurtlesKilled;
+	public double percentArmoredTurtlesKilled;
+	public double percentCannonBallsKilled;
+	public double percentFlowersKilled;
+	public double totalPercentEnemiesKilled;
 	
 	public void write(String fileName){
 		ObjectOutputStream out = null;

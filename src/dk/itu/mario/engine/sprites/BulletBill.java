@@ -2,6 +2,7 @@ package dk.itu.mario.engine.sprites;
 
 
 import dk.itu.mario.engine.Art;
+import dk.itu.mario.level.MyLevel;
 import dk.itu.mario.scene.LevelScene;
 
 
@@ -22,6 +23,7 @@ public class BulletBill extends Sprite
 
     public BulletBill(LevelScene world, float x, float y, int dir)
     {
+    	MyLevel.bullets_fired++;
         sheet = Art.enemies;
 
         this.x = x;

@@ -13,8 +13,10 @@ import dk.itu.mario.engine.sprites.Shell;
 import dk.itu.mario.engine.sprites.Sprite;
 
 import dk.itu.mario.level.Level;
+import dk.itu.mario.level.MyLevel;
 import dk.itu.mario.level.RandomLevel;
 import dk.itu.mario.scene.LevelScene;
+import dk.itu.mario.scene.LevelSceneTest;
 import dk.itu.mario.engine.sprites.FlowerEnemy;
 
 public class DataRecorder {
@@ -788,58 +790,143 @@ public class DataRecorder {
 
 	public void fillGamePlayMetrics(RandomLevel level){
         GamePlay gpm = new GamePlay();
-		gpm.completionTime = getCompletionTime();
-		gpm.totalTime = getTotalTime();////sums all the time, including from previous games if player died
-		gpm.jumpsNumber = getTimesJumped();
-		gpm.timeSpentDucking = getTotalDuckTime();
-		gpm.duckNumber = getTimesDucked();
-		gpm.timeSpentRunning = getTotalRunTime();
-		gpm.timesPressedRun = getTimesRun();
-		gpm.timeRunningRight = getTotalRightTime();
-		gpm.timeRunningLeft =  getTotalLeftTime();
-		gpm.coinsCollected =  getCoinsCollected();
-		System.out.println("Coins Collected: " + gpm.coinsCollected);
-		gpm.totalCoins = level.COINS;
-		gpm.emptyBlocksDestroyed = getBlocksEmptyDestroyed();
-		gpm.totalEmptyBlocks = level.BLOCKS_EMPTY;
-		gpm.coinBlocksDestroyed = getBlocksCoinDestroyed();
-		gpm.totalCoinBlocks = level.BLOCKS_COINS;
-		gpm.powerBlocksDestroyed = getBlocksPowerDestroyed();
-		gpm.totalpowerBlocks = level.BLOCKS_POWER;
-		gpm.kickedShells =  getShellsUnleashed(); //kicked
-		gpm.enemyKillByFire = getKillsFire();//Number of Kills by Shooting Enemy
-		gpm.enemyKillByKickingShell = getKillsShell();//Number of Kills by Kicking Shell on Enemy
-		gpm.totalEnemies = level.ENEMIES;
+        if (MyLevel.resetRecorder) {
+        	gpm.completionTime = getCompletionTime();
+        	gpm.totalTime = getTotalTime();////sums all the time, including from previous games if player died
+        	gpm.jumpsNumber = getTimesJumped();
+        	gpm.timeSpentDucking = getTotalDuckTime();
+        	gpm.duckNumber = getTimesDucked();
+        	gpm.timeSpentRunning = getTotalRunTime();
+        	gpm.timesPressedRun = getTimesRun();
+        	gpm.timeRunningRight = getTotalRightTime();
+        	gpm.timeRunningLeft =  getTotalLeftTime();
+        	gpm.coinsCollected =  getCoinsCollected();
+        	System.out.println("Coins Collected: " + gpm.coinsCollected);
+        	gpm.totalCoins = level.COINS;
+        	gpm.emptyBlocksDestroyed = getBlocksEmptyDestroyed();
+        	gpm.totalEmptyBlocks = level.BLOCKS_EMPTY;
+        	gpm.coinBlocksDestroyed = getBlocksCoinDestroyed();
+        	gpm.totalCoinBlocks = level.BLOCKS_COINS;
+        	gpm.powerBlocksDestroyed = getBlocksPowerDestroyed();
+        	gpm.totalpowerBlocks = level.BLOCKS_POWER;
+        	gpm.kickedShells =  getShellsUnleashed(); //kicked
+        	gpm.enemyKillByFire = getKillsFire();//Number of Kills by Shooting Enemy
+        	gpm.enemyKillByKickingShell = getKillsShell();//Number of Kills by Kicking Shell on Enemy
+        	gpm.totalEnemies = MyLevel.numEnemies;
 
-		gpm.totalTimeLittleMode = getTotalLittleTime();
-		gpm.totalTimeLargeMode = getTotalLargeTime();//Time Spent Being Large Mario
-		gpm.totalTimeFireMode = getTotalFireTime();//Time Spent Being Fire Mario
-		gpm.timesSwichingPower = getSwitchedPower();//Number of Times Switched Between Little, Large or Fire Mario
-		gpm.aimlessJumps = J();//aimless jumps
-		gpm.percentageBlocksDestroyed = nb();//percentage of all blocks destroyed
-		gpm.percentageCoinBlocksDestroyed = ncb();//percentage of coin blocks destroyed
-		gpm.percentageEmptyBlockesDestroyed = neb();//percentage of empty blocks destroyed
-		gpm.percentagePowerBlockDestroyed = np();//percentage of power blocks destroyed
-		gpm.timesOfDeathByFallingIntoGap = dg();//number of death by falling into a gap
-		gpm.timesOfDeathByRedTurtle = deaths[SpriteTemplate.RED_TURTLE];
-		gpm.timesOfDeathByGreenTurtle = deaths[SpriteTemplate.GREEN_TURTLE];
-		gpm.timesOfDeathByGoomba = deaths[SpriteTemplate.GOOMPA];
-		gpm.timesOfDeathByArmoredTurtle = deaths[SpriteTemplate.ARMORED_TURTLE];
-		gpm.timesOfDeathByJumpFlower = deaths[SpriteTemplate.JUMP_FLOWER];
-		gpm.timesOfDeathByCannonBall = deaths[SpriteTemplate.CANNON_BALL];
-		gpm.timesOfDeathByChompFlower = deaths[SpriteTemplate.CHOMP_FLOWER];
+        	gpm.totalTimeLittleMode = getTotalLittleTime();
+        	gpm.totalTimeLargeMode = getTotalLargeTime();//Time Spent Being Large Mario
+        	gpm.totalTimeFireMode = getTotalFireTime();//Time Spent Being Fire Mario
+        	gpm.timesSwichingPower = getSwitchedPower();//Number of Times Switched Between Little, Large or Fire Mario
+        	gpm.aimlessJumps = J();//aimless jumps
+        	gpm.percentageBlocksDestroyed = nb();//percentage of all blocks destroyed
+        	gpm.percentageCoinBlocksDestroyed = ncb();//percentage of coin blocks destroyed
+        	gpm.percentageEmptyBlockesDestroyed = neb();//percentage of empty blocks destroyed
+        	gpm.percentagePowerBlockDestroyed = np();//percentage of power blocks destroyed
+        	gpm.timesOfDeathByFallingIntoGap = dg();//number of death by falling into a gap
+        	gpm.timesOfDeathByRedTurtle = deaths[SpriteTemplate.RED_TURTLE];
+        	gpm.timesOfDeathByGreenTurtle = deaths[SpriteTemplate.GREEN_TURTLE];
+        	gpm.timesOfDeathByGoomba = deaths[SpriteTemplate.GOOMPA];
+        	gpm.timesOfDeathByArmoredTurtle = deaths[SpriteTemplate.ARMORED_TURTLE];
+        	gpm.timesOfDeathByJumpFlower = deaths[SpriteTemplate.JUMP_FLOWER];
+        	gpm.timesOfDeathByCannonBall = deaths[SpriteTemplate.CANNON_BALL];
+        	gpm.timesOfDeathByChompFlower = deaths[SpriteTemplate.CHOMP_FLOWER];
 
-		gpm.RedTurtlesKilled = kills[SpriteTemplate.RED_TURTLE];
-		gpm.GreenTurtlesKilled = kills[SpriteTemplate.GREEN_TURTLE];
-		gpm.GoombasKilled = kills[SpriteTemplate.GOOMPA];
-		gpm.ArmoredTurtlesKilled = kills[SpriteTemplate.ARMORED_TURTLE];
-		gpm.JumpFlowersKilled = kills[SpriteTemplate.JUMP_FLOWER];
-		gpm.CannonBallKilled = kills[SpriteTemplate.CANNON_BALL];
-		gpm.ChompFlowersKilled = kills[SpriteTemplate.CHOMP_FLOWER];
+        	gpm.RedTurtlesKilled = kills[SpriteTemplate.RED_TURTLE];
+        	gpm.GreenTurtlesKilled = kills[SpriteTemplate.GREEN_TURTLE];
+        	gpm.GoombasKilled = kills[SpriteTemplate.GOOMPA];
+        	gpm.ArmoredTurtlesKilled = kills[SpriteTemplate.ARMORED_TURTLE];
+        	gpm.JumpFlowersKilled = kills[SpriteTemplate.JUMP_FLOWER];
+        	gpm.CannonBallKilled = kills[SpriteTemplate.CANNON_BALL];
+        	gpm.ChompFlowersKilled = kills[SpriteTemplate.CHOMP_FLOWER];
+        	gpm.numRecorded = 1;
+        	gpm.numArmoredTurtles = MyLevel.spikyThing;
+        	gpm.numCannonBalls = MyLevel.bullets_fired;
+        	gpm.numFlowers = MyLevel.plants;
+        	gpm.numGoombas = MyLevel.goombas;
+        	gpm.numGreenTurtles = MyLevel.green_turtles;
+        	gpm.numRedTurtles = MyLevel.red_turtles;
+        	gpm.percentArmoredTurtlesKilled = getPercent(gpm.ArmoredTurtlesKilled, gpm.numArmoredTurtles);
+        	gpm.percentCannonBallsKilled = getPercent(gpm.CannonBallKilled, gpm.numCannonBalls);
+        	gpm.percentFlowersKilled = getPercent(gpm.JumpFlowersKilled + gpm.ChompFlowersKilled, gpm.numFlowers);
+        	gpm.percentGoombasKilled = getPercent(gpm.GoombasKilled, gpm.numGoombas);
+        	gpm.percentGreenTurtlesKilled = getPercent(gpm.GreenTurtlesKilled, gpm.numGreenTurtles);
+        	gpm.percentRedTurtlesKilled = getPercent(gpm.RedTurtlesKilled, gpm.numRedTurtles);
+        	gpm.totalPercentEnemiesKilled = getPercent(gpm.RedTurtlesKilled + gpm.GreenTurtlesKilled + gpm.GoombasKilled 
+        			+ gpm.ArmoredTurtlesKilled + gpm.ChompFlowersKilled + gpm.JumpFlowersKilled + gpm.CannonBallKilled, gpm.totalEnemies);
+        }
+        else {
+        	gpm.completionTime = LevelSceneTest.gp.completionTime + getCompletionTime();
+        	gpm.totalTime = getTotalTime();////sums all the time, including from previous games if player died
+        	gpm.jumpsNumber = LevelSceneTest.gp.jumpsNumber + getTimesJumped();
+        	gpm.timeSpentDucking = LevelSceneTest.gp.timeSpentDucking + getTotalDuckTime();
+        	gpm.duckNumber = LevelSceneTest.gp.duckNumber + getTimesDucked();
+        	gpm.timeSpentRunning = LevelSceneTest.gp.timeSpentRunning + getTotalRunTime();
+        	gpm.timesPressedRun = LevelSceneTest.gp.timesPressedRun + getTimesRun();
+        	gpm.timeRunningRight = LevelSceneTest.gp.timeRunningRight + getTotalRightTime();
+        	gpm.timeRunningLeft =  LevelSceneTest.gp.timeRunningLeft + getTotalLeftTime();
+        	gpm.coinsCollected =  LevelSceneTest.gp.coinsCollected + getCoinsCollected();
+        	gpm.totalCoins = level.COINS;
+        	gpm.emptyBlocksDestroyed = LevelSceneTest.gp.emptyBlocksDestroyed + getBlocksEmptyDestroyed();
+        	gpm.totalEmptyBlocks = level.BLOCKS_EMPTY;
+        	gpm.coinBlocksDestroyed = LevelSceneTest.gp.coinBlocksDestroyed + getBlocksCoinDestroyed();
+        	gpm.totalCoinBlocks = level.BLOCKS_COINS;
+        	gpm.powerBlocksDestroyed = LevelSceneTest.gp.powerBlocksDestroyed + getBlocksPowerDestroyed();
+        	gpm.totalpowerBlocks = level.BLOCKS_POWER;
+        	gpm.kickedShells =  LevelSceneTest.gp.kickedShells + getShellsUnleashed(); //kicked
+        	gpm.enemyKillByFire = LevelSceneTest.gp.enemyKillByFire + getKillsFire();//Number of Kills by Shooting Enemy
+        	gpm.enemyKillByKickingShell = LevelSceneTest.gp.enemyKillByKickingShell + getKillsShell();//Number of Kills by Kicking Shell on Enemy
+        	gpm.totalEnemies = LevelSceneTest.gp.totalEnemies + MyLevel.numEnemies;
+
+        	gpm.totalTimeLittleMode = LevelSceneTest.gp.totalTimeLittleMode + getTotalLittleTime();
+        	gpm.totalTimeLargeMode = LevelSceneTest.gp.totalTimeLargeMode + getTotalLargeTime();//Time Spent Being Large Mario
+        	gpm.totalTimeFireMode = LevelSceneTest.gp.totalTimeFireMode + getTotalFireTime();//Time Spent Being Fire Mario
+        	gpm.timesSwichingPower = LevelSceneTest.gp.timesSwichingPower + getSwitchedPower();//Number of Times Switched Between Little, Large or Fire Mario
+        	gpm.aimlessJumps = LevelSceneTest.gp.aimlessJumps + J();//aimless jumps
+        	gpm.percentageBlocksDestroyed = nb();//percentage of all blocks destroyed
+        	gpm.percentageCoinBlocksDestroyed = ncb();//percentage of coin blocks destroyed
+        	gpm.percentageEmptyBlockesDestroyed = neb();//percentage of empty blocks destroyed
+        	gpm.percentagePowerBlockDestroyed = np();//percentage of power blocks destroyed
+        	gpm.timesOfDeathByFallingIntoGap = LevelSceneTest.gp.timesOfDeathByFallingIntoGap + dg();//number of death by falling into a gap
+        	gpm.timesOfDeathByRedTurtle = LevelSceneTest.gp.timesOfDeathByRedTurtle + deaths[SpriteTemplate.RED_TURTLE];
+        	gpm.timesOfDeathByGreenTurtle = LevelSceneTest.gp.timesOfDeathByGreenTurtle + deaths[SpriteTemplate.GREEN_TURTLE];
+        	gpm.timesOfDeathByGoomba = LevelSceneTest.gp.timesOfDeathByGoomba + deaths[SpriteTemplate.GOOMPA];
+        	gpm.timesOfDeathByArmoredTurtle = LevelSceneTest.gp.timesOfDeathByArmoredTurtle + deaths[SpriteTemplate.ARMORED_TURTLE];
+        	gpm.timesOfDeathByJumpFlower = LevelSceneTest.gp.timesOfDeathByJumpFlower + deaths[SpriteTemplate.JUMP_FLOWER];
+        	gpm.timesOfDeathByCannonBall = LevelSceneTest.gp.timesOfDeathByCannonBall + deaths[SpriteTemplate.CANNON_BALL];
+        	gpm.timesOfDeathByChompFlower = LevelSceneTest.gp.timesOfDeathByChompFlower + deaths[SpriteTemplate.CHOMP_FLOWER];
+
+        	gpm.RedTurtlesKilled = LevelSceneTest.gp.RedTurtlesKilled + kills[SpriteTemplate.RED_TURTLE];
+        	gpm.GreenTurtlesKilled = LevelSceneTest.gp.GreenTurtlesKilled + kills[SpriteTemplate.GREEN_TURTLE];
+        	gpm.GoombasKilled = LevelSceneTest.gp.GoombasKilled + kills[SpriteTemplate.GOOMPA];
+        	gpm.ArmoredTurtlesKilled = LevelSceneTest.gp.ArmoredTurtlesKilled + kills[SpriteTemplate.ARMORED_TURTLE];
+        	gpm.JumpFlowersKilled = LevelSceneTest.gp.JumpFlowersKilled + kills[SpriteTemplate.JUMP_FLOWER];
+        	gpm.CannonBallKilled = LevelSceneTest.gp.CannonBallKilled + kills[SpriteTemplate.CANNON_BALL];
+        	gpm.ChompFlowersKilled = LevelSceneTest.gp.ChompFlowersKilled + kills[SpriteTemplate.CHOMP_FLOWER];
+        	gpm.numRecorded = LevelSceneTest.gp.numRecorded + 1;
+        	gpm.numArmoredTurtles = LevelSceneTest.gp.numArmoredTurtles + MyLevel.spikyThing;
+        	gpm.numCannonBalls = LevelSceneTest.gp.numCannonBalls + MyLevel.bullets_fired;
+        	gpm.numFlowers = LevelSceneTest.gp.numFlowers + MyLevel.plants;
+        	gpm.numGoombas = LevelSceneTest.gp.numGoombas + MyLevel.goombas;
+        	gpm.numGreenTurtles = LevelSceneTest.gp.numGreenTurtles + MyLevel.green_turtles;
+        	gpm.numRedTurtles = LevelSceneTest.gp.numRedTurtles + MyLevel.red_turtles;
+        	gpm.percentArmoredTurtlesKilled = getPercent(gpm.ArmoredTurtlesKilled, gpm.numArmoredTurtles);
+        	gpm.percentCannonBallsKilled = getPercent(gpm.CannonBallKilled, gpm.numCannonBalls);
+        	gpm.percentFlowersKilled = getPercent(gpm.JumpFlowersKilled + gpm.ChompFlowersKilled, gpm.numFlowers);
+        	gpm.percentGoombasKilled = getPercent(gpm.GoombasKilled, gpm.numGoombas);
+        	gpm.percentGreenTurtlesKilled = getPercent(gpm.GreenTurtlesKilled, gpm.numGreenTurtles);
+        	gpm.percentRedTurtlesKilled = getPercent(gpm.RedTurtlesKilled, gpm.numRedTurtles);
+        	gpm.totalPercentEnemiesKilled = getPercent(gpm.RedTurtlesKilled + gpm.GreenTurtlesKilled + gpm.GoombasKilled 
+        			+ gpm.ArmoredTurtlesKilled + gpm.ChompFlowersKilled + gpm.JumpFlowersKilled + gpm.CannonBallKilled, gpm.totalEnemies);
+        }
 		gpm.write("player.txt");
 		System.out.println(detailedLog);
 		write(detailedLog);
 		
+	}
+	
+	public double getPercent(double x, double y) {
+		return (y == 0) ? 0 : x/y;
 	}
 
 

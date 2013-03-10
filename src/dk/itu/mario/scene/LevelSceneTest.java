@@ -38,6 +38,7 @@ import dk.itu.mario.res.ResourcesManager;
 			private int point = -1;
 			private int []checkPoints;
 			private boolean isCustom;
+			public static GamePlay gp;
 
 
 			public LevelSceneTest(GraphicsConfiguration graphicsConfiguration,
@@ -60,7 +61,7 @@ import dk.itu.mario.res.ResourcesManager;
 		        if(level==null)
 		        	if(isCustom){
 		        		MyLevelGenerator clg = new MyLevelGenerator();
-		        		GamePlay gp = new GamePlay();
+		        		gp = new GamePlay();
 		        		gp = gp.read("player.txt");
 		        		currentLevel = (Level)clg.generateLevel(gp);
 		        		
@@ -120,6 +121,9 @@ import dk.itu.mario.res.ResourcesManager;
 		    	double endX = level.getxExit()*squareSize; //position of the end on the level
 		    	if(!isCustom && recorder==null)
 		    		recorder = new DataRecorder(this,(RandomLevel)level,keys);
+		    	if (recorder == null) { //For some reason they were only creating a data recorder if you aren't using a customized level. As a result, if you never died no stats were ever recorded 
+		    		recorder = new DataRecorder(this, (RandomLevel) level, keys);
+		    	}
 
 		        gameStarted = false;
 			}
@@ -141,7 +145,7 @@ import dk.itu.mario.res.ResourcesManager;
 			public void winActions(){
 				if(recorder != null)
 				recorder.fillGamePlayMetrics((RandomLevel)level);
-				
+				System.out.println("Bullets fired " + MyLevel.bullets_fired);
 				marioComponent.win();
 			}
 

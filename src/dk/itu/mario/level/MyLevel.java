@@ -16,6 +16,17 @@ public class MyLevel extends Level {
 	public int BLOCKS_COINS = 0; // the number of coin blocks
 	public int BLOCKS_POWER = 0; // the number of power blocks
 	public int COINS = 0; // These are the coins in boxes that Mario collect
+	
+	//Record these enemies
+	public static int bullets_fired = 0;
+	public static int red_turtles = 0;
+	public static int green_turtles = 0;
+	public static int plants = 0;
+	public static int goombas = 0;
+	public static int spikyThing = 0;
+	public static int numEnemies = 0;
+	
+	public static boolean resetRecorder = true;
 
 	private static Random levelSeedRandom = new Random();
 	public static long lastSeed;
@@ -34,15 +45,58 @@ public class MyLevel extends Level {
 	}
 
 	public MyLevel(int width, int height, long seed, int difficulty, int type,
-			GamePlay playerMetrics) {
-
+			GamePlay playerMetrics, boolean resetRecorder) {
 		this(width, height);
 		this.seed = seed;
+		MyLevel.resetRecorder = resetRecorder;
 		LevelResult result = simulatedAnnealing(10, 150, 100); //TODO Figure out what values go here
+		getEnemyCount(result.getSprites());
 		this.setMap(result.getMap()); //We might need to modify how we do this?
 		this.setSpriteMap(result.getSprites());
 		//System.out.println(compareLevels(result.getMap(), testLevel.getMap(), result.getSprites(), testLevel.getSpriteTemplates()));
 		//creat(seed, difficulty, type);
+	}
+	
+	/**
+	 * Get the stats for the enemys present in our generated level
+	 * @param spriteTemplate
+	 */
+	public void getEnemyCount(SpriteTemplate[][] spriteTemplate) {
+		for (int i = 0; i < spriteTemplate.length; i++) {
+			for (int j = 0; j < spriteTemplate[i].length; j++) {
+				if (spriteTemplate[i][j] != null) {
+					switch (spriteTemplate[i][j].type) {
+						case SpriteTemplate.RED_TURTLE:
+							MyLevel.red_turtles++;
+							numEnemies++;
+							break;
+						case SpriteTemplate.GREEN_TURTLE:
+							MyLevel.green_turtles++;
+							numEnemies++;
+							break;
+						case SpriteTemplate.GOOMPA:
+							numEnemies++;
+							MyLevel.goombas++;
+							break;
+						case SpriteTemplate.ARMORED_TURTLE:
+							numEnemies++;
+							spikyThing++;
+							break;
+						case SpriteTemplate.JUMP_FLOWER:
+							plants++;
+							numEnemies++;
+							break;
+						case SpriteTemplate.CHOMP_FLOWER:
+							plants++;
+							numEnemies++;
+							break;
+						default:
+							break;
+
+					}
+				}
+			}
+		}
 	}
 	
 	/**
@@ -76,7 +130,7 @@ public class MyLevel extends Level {
 	 */
 	public LevelResult simulatedAnnealing(int maxIterations, double acceptingScore, double startTemp) {
 		double temp = startTemp;
-		Level currentLevel = new RandomLevel(width, height, seed, levelSeedRandom.nextInt(4), type); // Start state is random level. We will probably want to modify the difficulty. Cannons are only present in the RandomLevel when difficulty is >= 3
+		Level currentLevel = new RandomLevel(width, height, seed, 1, type); // Start state is random level. We will probably want to modify the difficulty. Cannons are only present in the RandomLevel when difficulty is >= 3
 		xExit = currentLevel.xExit; //The exit for our level is what it was for the randomly generated level
 		yExit = currentLevel.yExit;
 		testLevel = currentLevel;
