@@ -382,6 +382,65 @@ public class LevelNode {
 	}
 	
 	
+	//Returns a type based on a passed in int
+		public Type getType(int i){
+			Type toReturn = Type.FLAT;
+			if(i==1){
+				toReturn = Type.HILL;
+			}
+			else if(i==2){
+				toReturn = Type.JUMP;
+			}
+			else if(i==3){
+				toReturn = Type.TUBES;
+			}
+			else if(i==4){
+				toReturn = Type.CANNONS;
+			}
+			else if(i==5){
+				toReturn = Type.ENEMIES;
+			}
+			
+			return toReturn;
+		}
+		
+		public void setBlock(int x, int y, byte b)
+	    {
+	        if (x < 0) return;
+	        if (y < 0) return;
+	        if (x >= map.length) return;
+	        if (y >= map[0].length) return;
+	        map[x][y] = b;
+	    }
+		
+		public byte getBlock(int x, int y)
+	    {
+	        if (x < 0) x = 0;
+	        if (y < 0) return 0;
+	        if (x >= map.length) x = map.length - 1;
+	        if (y >= map[0].length) y = map[0].length - 1;
+	        return map[x][y];
+	    }
+		
+		public void setSpriteTemplate(int x, int y, SpriteTemplate spriteTemplate)
+	    {
+	        if (x < 0) return;
+	        if (y < 0) return;
+	        if (x >= map.length) return;
+	        if (y >= map[0].length) return;
+	        sprites[x][y] = spriteTemplate;
+	    }
+		
+		public SpriteTemplate getSprite(int x, int y){
+			if (x < 0) x = 0;
+	        if (y < 0) y=0;
+	        if (x >= map.length) x = map.length - 1;
+	        if (y >= map[0].length) y = map[0].length - 1;
+	        return sprites[x][y];
+		}
+		
+		
+	
 	
 	
 }
