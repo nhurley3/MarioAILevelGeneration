@@ -7,6 +7,7 @@ import dk.itu.mario.MarioInterface.GamePlay;
 import dk.itu.mario.MarioInterface.LevelInterface;
 import dk.itu.mario.engine.sprites.SpriteTemplate;
 import dk.itu.mario.engine.sprites.Enemy;
+import dk.itu.mario.level.LevelNode.Type;
 
 public class MyLevel extends Level {
 	public static final int CHUNK_SIZE = 10;
@@ -39,6 +40,40 @@ public class MyLevel extends Level {
 	private int type;
 	private int gaps;
 	private long seed;
+	
+	GamePlay playerMets;
+	
+	/**
+	if(i==1){
+				toReturn = Type.HILL;
+			}
+			else if(i==2){
+				toReturn = Type.JUMP;
+			}
+			else if(i==3){
+				toReturn = Type.TUBES;
+			}
+			else if(i==4){
+				toReturn = Type.CANNONS;
+			}
+			else if(i==5){
+				toReturn = Type.ENEMIES;*/
+	
+	//The different values used to randomly chose a type (less than the value means we'll be using that)
+	private float hillProbability = 0.2f;
+	private float jumpProbability = 0.4f;
+	private float tubesProbability = 0.6f;
+	private float cannonsProbability = 0.8f;
+	private float enemiesProbability = 1.0f;
+	
+	//Booleans for whether we prefer to increase a given type (or not)
+	private boolean hillIncrease;
+	private boolean jumpIncrease;
+	private boolean tubesIncrease;
+	private boolean cannonsIncrease;
+	private boolean enemiesIncrease;
+	
+	
 
 	public MyLevel(int width, int height) {
 		super(width, height);
@@ -46,11 +81,129 @@ public class MyLevel extends Level {
 
 	public MyLevel(int width, int height, long seed, int difficulty, int type,
 			GamePlay playerMetrics, boolean resetRecorder) {
+		
+		
 		this(width, height);
 		this.seed = seed;
+		playerMets = playerMetrics;
+		System.out.println("Number of games: "+playerMets.numRecorded);
+		System.out.println("Aimless Jumps: "+playerMets.aimlessJumps);
+		System.out.println("Enemies percentage killed : "+playerMets.totalPercentEnemiesKilled);
+		System.out.println("Cannons percentage killed : "+playerMets.percentCannonBallsKilled);
+		System.out.println("Cannons killed me : "+playerMets.timesOfDeathByCannonBall);
+		System.out.println("Tubes percentage killed : "+playerMets.percentFlowersKilled);
+		System.out.println("Tubes killed me : "+playerMets.timesOfDeathByJumpFlower);
+		System.out.println("Death falls: "+playerMets.timesOfDeathByFallingIntoGap);
+		
+		
+		//percentCannonBallsKilled
+		
 		MyLevel.resetRecorder = resetRecorder;
+		
+		if(resetRecorder){
+			hillProbability = 0.2f;
+			jumpProbability = 0.4f;
+			tubesProbability = 0.6f;
+			cannonsProbability = 0.8f;
+			enemiesProbability = 1.0f;
+			
+			
+		}
+			
+			
+		
+		else{
+			//Calculate values
+			double avgJumps = playerMets.aimlessJumps/playerMets.numRecorded;
+			
+			//Hill/Jump probability setting
+			if(avgJumps>30){
+				hillProbability+=(avgJumps-28)*0.01f;
+				jumpProbability+=(avgJumps-28)*0.01f;
+				
+				hillIncrease=true;
+				jumpIncrease=true;
+				
+			}
+			else{
+				hillProbability-=(30-avgJumps)*0.01f;
+				jumpProbability+=(avgJumps-28)*0.01f;
+				
+				hillIncrease=false;
+				jumpIncrease=false;
+				
+				
+				if(hillProbability<0){
+					hillProbability = 0;
+				}
+			}
+			
+			//int totalEnemiesKilled = playerMets.RedTurtlesKilled + playerMets.GoombasKilled + playerMets.ArmoredTurtlesKilled + playerMets.GreenTurtlesKilled;
+			//double avgKilling = totalEnemiesKilled/playerMets.numRecorded;
+			
+			//Enemy killer probability setting
+			if(playerMets.totalPercentEnemiesKilled>0.25){
+				//You like to kill things, don't you? Decrease probability of all others
+				cannonsProbability-= (playerMets.totalPercentEnemiesKilled-0.25)/5.0f;
+				hillProbability-= (playerMets.totalPercentEnemiesKilled-0.25)/5.0f;
+				tubesProbability-= (playerMets.totalPercentEnemiesKilled-0.25)/5.0f;
+				jumpProbability-= (playerMets.totalPercentEnemiesKilled-0.25)/5.0f;
+				
+				enemiesIncrease=true;
+				
+			}
+			else{
+				//You really don't like to kill things? Make everything else more likely
+				cannonsProbability-= (playerMets.totalPercentEnemiesKilled-0.25)/5.0f;
+				hillProbability-= (playerMets.totalPercentEnemiesKilled-0.25)/5.0f;
+				tubesProbability-= (playerMets.totalPercentEnemiesKilled-0.25)/5.0f;
+				jumpProbability-= (playerMets.totalPercentEnemiesKilled-0.25)/5.0f;
+				
+				enemiesIncrease=false;
+			}
+			
+			//Cannon determination
+			if(playerMets.percentCannonBallsKilled>0.1){
+				//Chances are, you like killing things, so we'll make everythng but enemies less likely
+				hillProbability-= (playerMets.percentCannonBallsKilled-0.1)/5.0f;
+				tubesProbability-= (playerMets.percentCannonBallsKilled-0.1)/5.0f;
+				jumpProbability-= (playerMets.percentCannonBallsKilled-0.1)/5.0f;
+				
+				cannonsIncrease=true;
+			}
+			else{
+				//Chances are, you're terrified of bullet death, make everything more likely
+				hillProbability-= (playerMets.percentCannonBallsKilled-0.1)/5.0f;
+				tubesProbability-= (playerMets.percentCannonBallsKilled-0.1)/5.0f;
+				jumpProbability-= (playerMets.percentCannonBallsKilled-0.1)/5.0f;
+				
+				cannonsIncrease=false;
+			}
+			
+			
+			//Tubes determination
+			if(playerMets.percentFlowersKilled>0.0){
+				//Chances are, you like killing things, so we'll just make hills and jumps less likely
+				hillProbability-= (playerMets.percentFlowersKilled-0.0)/5.0f;
+				jumpProbability-= (playerMets.percentFlowersKilled-0.0)/5.0f;
+				
+				tubesIncrease=true;
+			}
+			else{
+				//Chances are, you don't like 
+				hillProbability-= (playerMets.percentFlowersKilled-0.0)/5.0f;
+				jumpProbability-= (playerMets.percentFlowersKilled-0.0)/5.0f;
+				
+				tubesIncrease=false;
+			}
+			
+			
+			
+			
+		}
+		
 		random = new Random(seed);
-		LevelResult result = simulatedAnnealing(800, 300, 300);
+		LevelResult result = simulatedAnnealing(1000, 400, 500);
 		getEnemyCount(result.getSprites());
 		this.setMap(result.getMap()); // We might need to modify how we do this?
 		this.setSpriteMap(result.getSprites());
@@ -344,13 +497,10 @@ public class MyLevel extends Level {
 												// one, it's all flat along
 												// here, let's make it randomly
 												// something else
-				int levelType = 1 + (int) (Math.random() * ((5 - 1) + 1));
 
 				
-				//TESTING
-				levelType=1;
 				
-				LevelNode.Type newType = minNode.getType(levelType);
+				LevelNode.Type newType = generateTypeByProbabilities();
 				
 				
 				
@@ -377,9 +527,8 @@ public class MyLevel extends Level {
 				LevelNode.Type curType = minNode.getType();
 
 				while (curType == minNode.getType()) {
-					int newType = random.nextInt(6);
+					curType = generateTypeByProbabilities();
 
-					curType = minNode.getType(newType);
 				}// We've got a new type now!
 
 				int nextDifficulty = 0;
@@ -433,24 +582,33 @@ public class MyLevel extends Level {
 						break;
 					}
 				} else {
-					// If we're in an in-between state, change our type and
-					// difficulty randomly
-					boolean increase = random.nextBoolean();
+					//If we've reset, have it be random
+					if(resetRecorder){
+						hillIncrease = random.nextBoolean();
+						jumpIncrease = random.nextBoolean();
+						tubesIncrease = random.nextBoolean();
+						cannonsIncrease = random.nextBoolean();
+						enemiesIncrease = random.nextBoolean();
+					}
+					
+					
+					
+					
 					switch (curType) {
 					case CANNONS:
-						alterCannons(minNode, increase);
+						alterCannons(minNode, cannonsIncrease);
 						break;
 					case HILL:
-						alterHills(minNode, increase);
+						alterHills(minNode, hillIncrease);
 						break;
 					case JUMP:
-						alterJumps(minNode, increase);
+						alterJumps(minNode, jumpIncrease);
 						break;
 					case TUBES:
-						alterTubes(minNode, increase);
+						alterTubes(minNode, tubesIncrease);
 						break;
 					case ENEMIES:
-						alterEnemies(minNode, increase);
+						alterEnemies(minNode, enemiesIncrease);
 						break;
 					}
 
@@ -463,9 +621,8 @@ public class MyLevel extends Level {
 			LevelNode.Type curType = minNode.getType();
 
 			while (curType == minNode.getType()) {
-				int newType = random.nextInt(6);
 
-				curType = minNode.getType(newType);
+				curType = generateTypeByProbabilities();
 			}// We've got a new type now!
 
 			int nextDifficulty = minNode.getDifficulty();
@@ -522,22 +679,34 @@ public class MyLevel extends Level {
 			} else {
 				// If we're in an in-between state, change our type and
 				// difficulty randomly
-				boolean increase = random.nextBoolean();
+				
+				//If we've reset, have it be random
+				if(resetRecorder){
+					hillIncrease = random.nextBoolean();
+					jumpIncrease = random.nextBoolean();
+					tubesIncrease = random.nextBoolean();
+					cannonsIncrease = random.nextBoolean();
+					enemiesIncrease = random.nextBoolean();
+				}
+				
+				
+				
+				
 				switch (curType) {
 				case CANNONS:
-					alterCannons(minNode, increase);
+					alterCannons(minNode, cannonsIncrease);
 					break;
 				case HILL:
-					alterHills(minNode, increase);
+					alterHills(minNode, hillIncrease);
 					break;
 				case JUMP:
-					alterJumps(minNode, increase);
+					alterJumps(minNode, jumpIncrease);
 					break;
 				case TUBES:
-					alterTubes(minNode, increase);
+					alterTubes(minNode, tubesIncrease);
 					break;
 				case ENEMIES:
-					alterEnemies(minNode, increase);
+					alterEnemies(minNode, enemiesIncrease);
 					break;
 				}
 
@@ -546,6 +715,27 @@ public class MyLevel extends Level {
 
 		System.out.println("-------------------");
 		return levelHead;
+	}
+	
+	
+	public LevelNode.Type generateTypeByProbabilities(){
+		float foo = random.nextFloat();
+		
+		if(foo<=hillProbability){
+			return LevelNode.Type.HILL;
+		}
+		else if(foo>hillProbability && foo<=jumpProbability){
+			return LevelNode.Type.JUMP;
+		}
+		else if(foo>jumpProbability && foo<=tubesProbability){
+			return LevelNode.Type.JUMP;
+		}
+		else if(foo>tubesProbability && foo<=cannonsProbability){
+			return LevelNode.Type.CANNONS;
+		}
+		else{
+			return LevelNode.Type.ENEMIES;
+		}
 	}
 
 	// All these alter the passed in levelNode based on the passed in boolean
@@ -561,6 +751,9 @@ public class MyLevel extends Level {
 			}
 		}
 	}
+	
+	
+	
 
 	// Makes a hill
 	private void buildHillSansEnemies(LevelNode node, int xo, int maxLength) {
@@ -623,9 +816,9 @@ public class MyLevel extends Level {
 							node.setBlock(x, y, COIN);
 						} else if (y == floor
 								&& (node.getBlock(x, y) == 0 || node.getBlock(
-										x, y) == HILL_FILL)
-								|| node.getBlock(x, y) == HILL_LEFT
-								|| node.getBlock(x, y) == HILL_RIGHT) {
+										x, y) == HILL_FILL)){
+								//|| node.getBlock(x, y) == HILL_LEFT
+								//|| node.getBlock(x, y) == HILL_RIGHT) {
 							if (x == xo) {
 								node.setBlock(x, y, HILL_TOP_LEFT);
 							} else if (x == (xo + length - 1)) {// WARNING
@@ -763,7 +956,7 @@ public class MyLevel extends Level {
 							node.setBlock(x, y, (byte) -127);
 						}
 					} else if (y > floor) {
-						if (node.getBlock(x, y) == 0
+						if (node.getBlock(x, y) == 0 || node.getBlock(x, y) == -127
 								|| node.getBlock(x, y) == RIGHT_GRASS_EDGE
 								|| node.getBlock(x, y) == RIGHT_UP_GRASS_EDGE
 								|| node.getBlock(x, y) == LEFT_GRASS_EDGE
