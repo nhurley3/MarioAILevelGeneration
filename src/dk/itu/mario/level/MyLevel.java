@@ -16,8 +16,8 @@ public class MyLevel extends Level {
 	public int BLOCKS_COINS = 0; // the number of coin blocks
 	public int BLOCKS_POWER = 0; // the number of power blocks
 	public int COINS = 0; // These are the coins in boxes that Mario collect
-	
-	//Record these enemies
+
+	// Record these enemies
 	public static int bullets_fired = 0;
 	public static int red_turtles = 0;
 	public static int green_turtles = 0;
@@ -25,14 +25,14 @@ public class MyLevel extends Level {
 	public static int goombas = 0;
 	public static int spikyThing = 0;
 	public static int numEnemies = 0;
-	
+
 	public static boolean resetRecorder = true;
 
 	private static Random levelSeedRandom = new Random();
 	public static long lastSeed;
 
 	Random random;
-	
+
 	private Level testLevel;
 
 	private int difficulty;
@@ -49,16 +49,19 @@ public class MyLevel extends Level {
 		this(width, height);
 		this.seed = seed;
 		MyLevel.resetRecorder = resetRecorder;
-		LevelResult result = simulatedAnnealing(800, 150, 300);
+		random = new Random(seed);
+		LevelResult result = simulatedAnnealing(800, 300, 300);
 		getEnemyCount(result.getSprites());
-		this.setMap(result.getMap()); //We might need to modify how we do this?
+		this.setMap(result.getMap()); // We might need to modify how we do this?
 		this.setSpriteMap(result.getSprites());
-		//System.out.println(compareLevels(result.getMap(), testLevel.getMap(), result.getSprites(), testLevel.getSpriteTemplates()));
-		//creat(seed, difficulty, type);
+		// System.out.println(compareLevels(result.getMap(), testLevel.getMap(),
+		// result.getSprites(), testLevel.getSpriteTemplates()));
+		// creat(seed, difficulty, type);
 	}
-	
+
 	/**
 	 * Get the stats for the enemys present in our generated level
+	 * 
 	 * @param spriteTemplate
 	 */
 	public void getEnemyCount(SpriteTemplate[][] spriteTemplate) {
@@ -66,48 +69,50 @@ public class MyLevel extends Level {
 			for (int j = 0; j < spriteTemplate[i].length; j++) {
 				if (spriteTemplate[i][j] != null) {
 					switch (spriteTemplate[i][j].type) {
-						case SpriteTemplate.RED_TURTLE:
-							MyLevel.red_turtles++;
-							numEnemies++;
-							break;
-						case SpriteTemplate.GREEN_TURTLE:
-							MyLevel.green_turtles++;
-							numEnemies++;
-							break;
-						case SpriteTemplate.GOOMPA:
-							numEnemies++;
-							MyLevel.goombas++;
-							break;
-						case SpriteTemplate.ARMORED_TURTLE:
-							numEnemies++;
-							spikyThing++;
-							break;
-						case SpriteTemplate.JUMP_FLOWER:
-							plants++;
-							numEnemies++;
-							break;
-						case SpriteTemplate.CHOMP_FLOWER:
-							plants++;
-							numEnemies++;
-							break;
-						default:
-							break;
+					case SpriteTemplate.RED_TURTLE:
+						MyLevel.red_turtles++;
+						numEnemies++;
+						break;
+					case SpriteTemplate.GREEN_TURTLE:
+						MyLevel.green_turtles++;
+						numEnemies++;
+						break;
+					case SpriteTemplate.GOOMPA:
+						numEnemies++;
+						MyLevel.goombas++;
+						break;
+					case SpriteTemplate.ARMORED_TURTLE:
+						numEnemies++;
+						spikyThing++;
+						break;
+					case SpriteTemplate.JUMP_FLOWER:
+						plants++;
+						numEnemies++;
+						break;
+					case SpriteTemplate.CHOMP_FLOWER:
+						plants++;
+						numEnemies++;
+						break;
+					default:
+						break;
 
 					}
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Testing that the maps and sprites were copying correctly.
+	 * 
 	 * @param map1
 	 * @param map2
 	 * @param sprite1
 	 * @param sprite2
 	 * @return
 	 */
-	public boolean compareLevels(byte[][] map1, byte[][] map2, SpriteTemplate[][] sprite1, SpriteTemplate[][] sprite2) {
+	public boolean compareLevels(byte[][] map1, byte[][] map2,
+			SpriteTemplate[][] sprite1, SpriteTemplate[][] sprite2) {
 		for (int i = 0; i < map1.length; i++) {
 			for (int j = 0; j < map1[0].length; j++) {
 				if (map1[i][j] != map2[i][j] || sprite1[i][j] != sprite2[i][j])
@@ -119,6 +124,7 @@ public class MyLevel extends Level {
 
 	/**
 	 * Perform simulated annealing
+	 * 
 	 * @param maxIterations
 	 *            The max number of iterations for simulated annealing to
 	 *            perform
@@ -128,16 +134,45 @@ public class MyLevel extends Level {
 	 *            The temperature to start at
 	 * @return the best map and sprite template that has been found
 	 */
-	public LevelResult simulatedAnnealing(int maxIterations, double acceptingScore, double startTemp) {
+	public LevelResult simulatedAnnealing(int maxIterations,
+			double acceptingScore, double startTemp) {
 		double temp = startTemp;
-		Level currentLevel = new RandomLevel(width, height, seed, 1, type); // Start state is random level. We will probably want to modify the difficulty. Cannons are only present in the RandomLevel when difficulty is >= 3
-		xExit = currentLevel.xExit; //The exit for our level is what it was for the randomly generated level
+		Level currentLevel = new RandomLevel(width, height, seed, 1, type); // Start
+																			// state
+																			// is
+																			// random
+																			// level.
+																			// We
+																			// will
+																			// probably
+																			// want
+																			// to
+																			// modify
+																			// the
+																			// difficulty.
+																			// Cannons
+																			// are
+																			// only
+																			// present
+																			// in
+																			// the
+																			// RandomLevel
+																			// when
+																			// difficulty
+																			// is
+																			// >=
+																			// 3
+		xExit = currentLevel.xExit; // The exit for our level is what it was for
+									// the randomly generated level
 		yExit = currentLevel.yExit;
 		testLevel = currentLevel;
 		LevelChunker levelChunker = new LevelChunker(currentLevel, CHUNK_SIZE);
-		LevelNode levelHead = levelChunker.splitLevel(); //Split the levels map into chunks
+		LevelNode levelHead = levelChunker.splitLevel(); // Split the levels map
+															// into chunks
 		int curLevelScore = evalLevel(levelHead);
-		LevelResult bestLevel = combineLevelNodes(levelHead); //Keep track of the best map we have found
+		LevelResult bestLevel = combineLevelNodes(levelHead); // Keep track of
+																// the best map
+																// we have found
 		int bestScore = curLevelScore;
 		int k = 0;
 		while (k < maxIterations && curLevelScore < acceptingScore) {
@@ -147,14 +182,22 @@ public class MyLevel extends Level {
 			copyMapAndSprite(newLevel, res.getMap(), res.getSprites());
 			LevelChunker chunker = new LevelChunker(newLevel, CHUNK_SIZE);
 			LevelNode headCopy = chunker.splitLevel();
-			LevelNode neighborState = getNeighbor(headCopy); //Get the head node of the neighbor
+			LevelNode neighborState = getNeighbor(headCopy); // Get the head
+																// node of the
+																// neighbor
 			if (neighborState != null) {
 				int neighborScore = evalLevel(neighborState);
-				if (shouldAccept(curLevelScore, neighborScore, temp)) { //Determine if we accept the neighbor state
+				if (shouldAccept(curLevelScore, neighborScore, temp)) { // Determine
+																		// if we
+																		// accept
+																		// the
+																		// neighbor
+																		// state
 					levelHead = neighborState;
 					curLevelScore = neighborScore;
 				}
-				if (neighborScore > bestScore) { // Keep track of the best level we have found
+				if (neighborScore > bestScore) { // Keep track of the best level
+													// we have found
 					bestLevel = combineLevelNodes(neighborState);
 					bestScore = neighborScore;
 				}
@@ -164,8 +207,9 @@ public class MyLevel extends Level {
 
 		return bestLevel;
 	}
-	
-	public void copyMapAndSprite(Level level, byte[][] map, SpriteTemplate[][] sprites) {
+
+	public void copyMapAndSprite(Level level, byte[][] map,
+			SpriteTemplate[][] sprites) {
 		for (int i = 0; i < map.length; i++) {
 			for (int j = 0; j < map[i].length; j++) {
 				level.getMap()[i][j] = map[i][j];
@@ -173,7 +217,7 @@ public class MyLevel extends Level {
 			}
 		}
 	}
-	
+
 	public void printNodes(LevelNode one, LevelNode two) {
 		one.printChunkMap();
 		System.out.println();
@@ -195,247 +239,168 @@ public class MyLevel extends Level {
 		else if (curLevelScore == neighborScore)
 			return false;
 		else { // Accept based on a probability
-			return Math.exp(- Math.abs(neighborScore - curLevelScore) / temperature) > Math
-					.random();
+			return Math.exp(-Math.abs(neighborScore - curLevelScore)
+					/ temperature) > Math.random();
 		}
 	}
 
 	/**
-	 * TODO Get a neighboring level of the given level. 
-	 * Should be able to just modify the passed in list and return the given head;
+	 * TODO Get a neighboring level of the given level. Should be able to just
+	 * modify the passed in list and return the given head;
 	 * 
-	 * @param level The head node of the level node list
+	 * @param level
+	 *            The head node of the level node list
 	 * @return The head node of the level node list
 	 */
 	public LevelNode getNeighbor(LevelNode levelHead) {
 		LevelNode curNode = levelHead;
-		
-		//The stored value of the minimum difficulties
+
+		// The stored value of the minimum difficulties
 		int minDualDifficulty = 100;
-		//Pretend both are different
+		// Pretend both are different
 		int dualTypeDifferences = 2;
-		
+
 		LevelNode minNode = levelHead;
-		
-		//System.out.println("Level head");
-		//levelHead.printStats();
-		
-		
-		//Let's go ahead and set the curNode as next to head. We really shouldn't mess with the first 10 squares
-		curNode= curNode.getNextNode();
-		
-		//Let's get the specific node we'll be improving, semi randomly
-		while(curNode!=null){
-			
+
+		// System.out.println("Level head");
+		// levelHead.printStats();
+
+		// Let's go ahead and set the curNode as next to head. We really
+		// shouldn't mess with the first 10 squares
+		curNode = curNode.getNextNode();
+
+
+		// Let's get the specific node we'll be improving, semi randomly
+		while (curNode.getNextNode().getNextNode().getNextNode().getNextNode()
+				.getNextNode() != null) {
+
 			LevelNode prevNode = curNode.getPrevNode();
 			LevelNode nextNode = curNode.getNextNode();
-			
+
 			int curDualDifficulty = 0;
 			int curTypeDifferences = 0;
-			
-			if(prevNode!=null){
-				curDualDifficulty +=Math.abs(curNode.getDifficulty()-prevNode.getDifficulty());
-				
-				if(curNode.getType()!=prevNode.getType()){
+
+			if (prevNode != null) {
+				curDualDifficulty += Math.abs(curNode.getDifficulty()
+						- prevNode.getDifficulty());
+
+				if (curNode.getType() != prevNode.getType()) {
 					curTypeDifferences++;
 				}
 			}
-			
-			if(nextNode!=null){
-				curDualDifficulty +=Math.abs(curNode.getDifficulty()-nextNode.getDifficulty());
-				if(curNode.getType()!=nextNode.getType()){
+
+			if (nextNode != null) {
+				curDualDifficulty += Math.abs(curNode.getDifficulty()
+						- nextNode.getDifficulty());
+				if (curNode.getType() != nextNode.getType()) {
 					curTypeDifferences++;
 				}
 			}
-			
-			//WARNING: MIGHT NOT WANT TO GRAB THIS ONE
+
+			// System.out.println("Min difficulty: "+minDualDifficulty);
+
+			// WARNING: MIGHT NOT WANT TO GRAB THIS ONE
 			int randomChance = random.nextInt(4);
-			
-			//If we're less than the minimum, just set all the relevant values
-			if(curDualDifficulty<minDualDifficulty || randomChance==0){
+		
+			// If we're less than the minimum, just set all the relevant values
+			if (curDualDifficulty < minDualDifficulty) {
+
+				// System.out.println("Less than: "+x+", with Difficulty: "+curDualDifficulty);
 				minDualDifficulty = curDualDifficulty;
 				dualTypeDifferences = curTypeDifferences;
 				minNode = curNode;
-			}
-			else if(curDualDifficulty==minDualDifficulty){//If we're the same, then use the difference of types on either side as a tie breaker
-				//Since we're looking for the worst, if the types aren't the same, that's worse
-				if(curTypeDifferences<dualTypeDifferences){
+			} else if (curDualDifficulty == minDualDifficulty
+					|| randomChance == 0) {// If we're the same, then use the
+											// difference of types on either
+											// side as a tie breaker
+
+				// System.out.println("Equal to: "+x+", with Difficulty: "+curDualDifficulty);
+				// Since we're looking for the worst, if the types aren't the
+				// same, that's worse
+				if (curTypeDifferences < dualTypeDifferences) {
 					minDualDifficulty = curDualDifficulty;
 					dualTypeDifferences = curTypeDifferences;
 					minNode = curNode;
 				}
-				
-				//Otherwise, just keep things how they are
+
+				// Otherwise, just keep things how they are
 			}
-			
+
 			curNode = curNode.getNextNode();
-			
+
 		}
-		
-		
-		
-		
-		//Okay, so now we've got a new node, what's it look like? 
-		//System.out.println("Min Node:");
-		//minNode.printStats();
-		
-		//First, let's concentrate on type, and making sure that's different
-		if(dualTypeDifferences==0){//If neither are different, we need to make this middle one more interesting
-			
-			
-			if(minNode.getDifficulty()==0){//If difficulty is 0 for this one, it's all flat along here, let's make it randomly something else
-				int levelType = 1+ (int)(Math.random()*((5-1)+1));
+
+		// System.out.println("X: "+x);
+
+		// Okay, so now we've got a new node, what's it look like?
+		// System.out.println("Min Node:");
+		// minNode.printStats();
+
+		// First, let's concentrate on type, and making sure that's different
+		if (dualTypeDifferences == 0) {// If neither are different, we need to
+										// make this middle one more interesting
+
+			if (minNode.getDifficulty() == 0) {// If difficulty is 0 for this
+												// one, it's all flat along
+												// here, let's make it randomly
+												// something else
+				int levelType = 1 + (int) (Math.random() * ((5 - 1) + 1));
+
 				
-				
+				//TESTING
+				levelType=1;
 				
 				LevelNode.Type newType = minNode.getType(levelType);
 				
-				switch(newType){
-					case CANNONS:
-						alterCannons(minNode,true);
-						break;
-					case HILL:
-						alterHills(minNode,true);
-						break;
-					case JUMP:
-						alterJumps(minNode, true);
-						break;
-					case TUBES:
-						alterTubes(minNode, true);
-						break;
-					case ENEMIES:
-						alterEnemies(minNode, true);
-						break;
+				
+				
+
+				switch (newType) {
+				case CANNONS:
+					alterCannons(minNode, true);
+					break;
+				case HILL:
+					alterHills(minNode, true);
+					break;
+				case JUMP:
+					alterJumps(minNode, true);
+					break;
+				case TUBES:
+					alterTubes(minNode, true);
+					break;
+				case ENEMIES:
+					alterEnemies(minNode, true);
+					break;
 				}
-				
-				
-			}
-			else{
+
+			} else {
 				LevelNode.Type curType = minNode.getType();
-				
-				while(curType==minNode.getType()){
+
+				while (curType == minNode.getType()) {
 					int newType = random.nextInt(6);
-					
+
 					curType = minNode.getType(newType);
-				}//We've got a new type now!
-				
-				
-				int nextDifficulty=0;
-				
-				if(minNode.getNextNode()!=null){
+				}// We've got a new type now!
+
+				int nextDifficulty = 0;
+
+				if (minNode.getNextNode() != null) {
 					nextDifficulty = minNode.getNextNode().getDifficulty();
 				}
 				int prevDifficulty = minNode.getPrevNode().getDifficulty();
-				int curDifficulty=minNode.getDifficulty();
-				
-				int differenceNext = nextDifficulty-curDifficulty;
-				int differencePrev = prevDifficulty-curDifficulty;
-				
-				if(differenceNext>0 && differencePrev>0){
-					//TESTING minNode.getType()
-					
-					switch(minNode.getType()){
-						case CANNONS:
-							alterCannons(minNode,false);
-							break;
-						case HILL:
-							alterHills(minNode,false);
-							break;
-						case JUMP:
-							alterJumps(minNode, false);
-							break;
-						case TUBES:
-							alterTubes(minNode, false);
-							break;
-						case ENEMIES:
-							alterEnemies(minNode, false);
-							break;
-					}
-				}
-				else if(differenceNext<0 && differencePrev<0){
-					//make us more difficult
-					
-					switch(minNode.getType()){
-						case CANNONS:
-							alterCannons(minNode,true);
-							break;
-						case HILL:
-							alterHills(minNode,true);
-							break;
-						case JUMP:
-							alterJumps(minNode, true);
-							break;
-						case TUBES:
-							alterTubes(minNode, true);
-							break;
-						case ENEMIES:
-							alterEnemies(minNode, true);
-							break;
-					}
-				}
-				else{
-					//If we're in an in-between state, change our type and difficulty randomly
-					boolean increase = random.nextBoolean();
-					switch(curType){
-						case CANNONS:
-							alterCannons(minNode,increase);
-							break;
-						case HILL:
-							alterHills(minNode,increase);
-							break;
-						case JUMP:
-							alterJumps(minNode, increase);
-							break;
-						case TUBES:
-							alterTubes(minNode, increase);
-							break;
-						case ENEMIES:
-							alterEnemies(minNode, increase);
-							break;
-					}
-					
-				}
-			
-			}
-			
-			
-			
-			
-			
-			
-		}
-		else{//Else, we're gonna focus on altering the difficulty
-			
-			LevelNode.Type curType = minNode.getType();
-			
-			while(curType==minNode.getType()){
-				int newType = random.nextInt(6);
-				
-				curType = minNode.getType(newType);
-			}//We've got a new type now!
-			
-			
-			
-			int nextDifficulty = minNode.getDifficulty();
-			
-			if(minNode.getNextNode()!=null){
-				nextDifficulty = minNode.getNextNode().getDifficulty();
-			}
-			int prevDifficulty = minNode.getPrevNode().getDifficulty();
-			int curDifficulty=minNode.getDifficulty();
-			
-			int differenceNext = nextDifficulty-curDifficulty;
-			int differencePrev = prevDifficulty-curDifficulty;
-			
-			if(differenceNext>0 && differencePrev>0){
-				//make us easier
-				
-				switch(minNode.getType()){
+				int curDifficulty = minNode.getDifficulty();
+
+				int differenceNext = nextDifficulty - curDifficulty;
+				int differencePrev = prevDifficulty - curDifficulty;
+
+				if (differenceNext > 0 && differencePrev > 0) {
+
+					switch (minNode.getType()) {
 					case CANNONS:
-						alterCannons(minNode,false);
+						alterCannons(minNode, false);
 						break;
 					case HILL:
-						alterHills(minNode,false);
+						alterHills(minNode, false);
 						break;
 					case JUMP:
 						alterJumps(minNode, false);
@@ -446,17 +411,16 @@ public class MyLevel extends Level {
 					case ENEMIES:
 						alterEnemies(minNode, false);
 						break;
-				}
-			}
-			else if(differenceNext<0 && differencePrev<0){
-				//make us more difficult
-				
-				switch(minNode.getType()){
+					}
+				} else if (differenceNext < 0 && differencePrev < 0) {
+					// make us more difficult
+
+					switch (minNode.getType()) {
 					case CANNONS:
-						alterCannons(minNode,true);
+						alterCannons(minNode, true);
 						break;
 					case HILL:
-						alterHills(minNode,true);
+						alterHills(minNode, true);
 						break;
 					case JUMP:
 						alterJumps(minNode, true);
@@ -467,17 +431,17 @@ public class MyLevel extends Level {
 					case ENEMIES:
 						alterEnemies(minNode, true);
 						break;
-				}
-			}
-			else{
-				//If we're in an in-between state, change our type and difficulty randomly
-				boolean increase = random.nextBoolean();
-				switch(curType){
+					}
+				} else {
+					// If we're in an in-between state, change our type and
+					// difficulty randomly
+					boolean increase = random.nextBoolean();
+					switch (curType) {
 					case CANNONS:
-						alterCannons(minNode,increase);
+						alterCannons(minNode, increase);
 						break;
 					case HILL:
-						alterHills(minNode,increase);
+						alterHills(minNode, increase);
 						break;
 					case JUMP:
 						alterJumps(minNode, increase);
@@ -488,348 +452,537 @@ public class MyLevel extends Level {
 					case ENEMIES:
 						alterEnemies(minNode, increase);
 						break;
+					}
+
 				}
-				
+
+			}
+
+		} else {// Else, we're gonna focus on altering the difficulty
+
+			LevelNode.Type curType = minNode.getType();
+
+			while (curType == minNode.getType()) {
+				int newType = random.nextInt(6);
+
+				curType = minNode.getType(newType);
+			}// We've got a new type now!
+
+			int nextDifficulty = minNode.getDifficulty();
+
+			if (minNode.getNextNode() != null) {
+				nextDifficulty = minNode.getNextNode().getDifficulty();
+			}
+			int prevDifficulty = minNode.getPrevNode().getDifficulty();
+			int curDifficulty = minNode.getDifficulty();
+
+			int differenceNext = nextDifficulty - curDifficulty;
+			int differencePrev = prevDifficulty - curDifficulty;
+
+			if (differenceNext > 0 && differencePrev > 0) {
+				// make us easier
+
+				switch (minNode.getType()) {
+				case CANNONS:
+					alterCannons(minNode, false);
+					break;
+				case HILL:
+					alterHills(minNode, false);
+					break;
+				case JUMP:
+					alterJumps(minNode, false);
+					break;
+				case TUBES:
+					alterTubes(minNode, false);
+					break;
+				case ENEMIES:
+					alterEnemies(minNode, false);
+					break;
+				}
+			} else if (differenceNext < 0 && differencePrev < 0) {
+				// make us more difficult
+
+				switch (minNode.getType()) {
+				case CANNONS:
+					alterCannons(minNode, true);
+					break;
+				case HILL:
+					alterHills(minNode, true);
+					break;
+				case JUMP:
+					alterJumps(minNode, true);
+					break;
+				case TUBES:
+					alterTubes(minNode, true);
+					break;
+				case ENEMIES:
+					alterEnemies(minNode, true);
+					break;
+				}
+			} else {
+				// If we're in an in-between state, change our type and
+				// difficulty randomly
+				boolean increase = random.nextBoolean();
+				switch (curType) {
+				case CANNONS:
+					alterCannons(minNode, increase);
+					break;
+				case HILL:
+					alterHills(minNode, increase);
+					break;
+				case JUMP:
+					alterJumps(minNode, increase);
+					break;
+				case TUBES:
+					alterTubes(minNode, increase);
+					break;
+				case ENEMIES:
+					alterEnemies(minNode, increase);
+					break;
+				}
+
 			}
 		}
-		
-		
+
 		System.out.println("-------------------");
 		return levelHead;
 	}
-	
-	
-	//All these alter the passed in levelNode based on the passed in boolean
-		public void alterHills(LevelNode levelNode, boolean increase){
-			if(levelNode!=null){
-				if(increase){
-					//System.out.println("Building hill");
-					//levelNode.setBlock(0,0, COIN);
-					buildHillSansEnemies(levelNode, random.nextInt(5), 5);
-				}
-				else{
-					flattenLevelNode(levelNode, random.nextInt(5), 5);
-				}
+
+	// All these alter the passed in levelNode based on the passed in boolean
+	public void alterHills(LevelNode levelNode, boolean increase) {
+		if (levelNode != null) {
+			if (increase) {
+				// System.out.println("Building hill");
+				levelNode.setBlock(1, 0, COIN);
+				buildHillSansEnemies(levelNode, random.nextInt(5), 5);
+			} else {
+				levelNode.setBlock(1, 1, COIN);
+				flattenLevelNode(levelNode, random.nextInt(5), 5);
 			}
 		}
-		
-		//Makes a hill
-		private void buildHillSansEnemies(LevelNode node, int xo, int maxLength){
-			int length = random.nextInt(5)+2;
-			if (length > maxLength)
-				length = maxLength;
-			
-			
-			
-			int i=xo;
-			int j=0;
-			int floor = 0;
-			boolean foundGround =false;
-			while(i<xo+maxLength && !foundGround){
-				while(j<height &&!foundGround){
-					if((node.getBlock(i, j)==-127 || node.getBlock(i, j)==HILL_TOP) && i<9){
-						foundGround=true;
-						floor=j;
-					}
-					
-					j++;
+	}
+
+	// Makes a hill
+	private void buildHillSansEnemies(LevelNode node, int xo, int maxLength) {
+		int length = random.nextInt(5) + 2;
+		if (length > maxLength)
+			length = maxLength;
+
+		int floor = 0;
+		boolean foundGround = false;
+		boolean doEet = true;
+		for (int i = xo; i < xo + length; i++) {
+			for (int j = 0; j < height; j++) {
+				if (!foundGround
+						&& (node.getBlock(i, j) == -127 || node.getBlock(i, j) == HILL_TOP)
+						&& i < 9) {
+					foundGround = true;
+					floor = j;
 				}
-				i++;
+				if (node.getBlock(i, j) == BLOCK_EMPTY
+						|| node.getBlock(i, j) == BLOCK_COIN
+						|| node.getBlock(i, j) == BLOCK_POWERUP
+						|| node.getBlock(i, j) == TUBE_TOP_LEFT
+						|| node.getBlock(i, j) == TUBE_TOP_RIGHT
+						|| node.getBlock(i, j) == TUBE_SIDE_LEFT
+						|| node.getBlock(i, j) == TUBE_TOP_RIGHT) {
+					doEet = false;
+				}
+
 			}
-			
-			floor-=2-random.nextInt(4);
-			
-			
-			
-			
+		}
+
+		if (floor != 0 & doEet) {
+			floor -= (2 + random.nextInt(3));
+
 			int setCoins = random.nextInt(2);
-			if(node.getBlock(xo-1, floor)==0 && node.getBlock(xo+length, floor)==0){
-				//clear stuff out
+			if (node.getBlock(xo - 1, floor) == 0
+					&& node.getBlock(xo + length, floor) == 0) {
+				// clear stuff out
 				for (int x = xo; x < xo + length; x++) {
 					for (int y = 0; y < height; y++) {
-						if(node.getBlock(x, y)==COIN){
-							node.setBlock(x,y, HILL_FILL);
+						if (y > 2 && node.getBlock(x, y) == COIN) {
+							node.setBlock(x, y, (byte) 0);
 						}
 					}
-				
+
 				}
 				for (int x = xo; x < xo + length; x++) {
 					for (int y = 0; y < height; y++) {
-						
-						/**if(y==floor && node.getBlock(x, y)!=-127 && node.getBlock(x, y)!=GROUND &&
-								node.getBlock(x, y)!=HILL_FILL && node.getBlock(x, y)!=HILL_TOP
-								&& node.getBlock(x, y)!=HILL_TOP_LEFT && node.getBlock(x, y)!=HILL_TOP_RIGHT){
-								*/
-						
-					if(y==floor-1 && setCoins==1 && (node.getBlock(x, y)==0 )){
-						node.setBlock(x, y, COIN);
-					}
-					else if(y==floor && (node.getBlock(x, y)==0 ||node.getBlock(x, y)==HILL_FILL)){
-							if(x==xo){
+
+						/**
+						 * if(y==floor && node.getBlock(x, y)!=-127 &&
+						 * node.getBlock(x, y)!=GROUND && node.getBlock(x,
+						 * y)!=HILL_FILL && node.getBlock(x, y)!=HILL_TOP &&
+						 * node.getBlock(x, y)!=HILL_TOP_LEFT &&
+						 * node.getBlock(x, y)!=HILL_TOP_RIGHT){
+						 */
+
+						if (y == floor - 1 && setCoins == 1
+								&& (node.getBlock(x, y) == 0)) {
+							node.setBlock(x, y, COIN);
+						} else if (y == floor
+								&& (node.getBlock(x, y) == 0 || node.getBlock(
+										x, y) == HILL_FILL)
+								|| node.getBlock(x, y) == HILL_LEFT
+								|| node.getBlock(x, y) == HILL_RIGHT) {
+							if (x == xo) {
 								node.setBlock(x, y, HILL_TOP_LEFT);
-							}
-							else if(x==(xo+length-1)){
+							} else if (x == (xo + length - 1)) {// WARNING
+																// SHOULD BE -1
+																// changing to
+																// -2
 								node.setBlock(x, y, HILL_TOP_RIGHT);
-							}
-							else{
+							} else {
+								// node.setBlock(x, y, HILL_TOP_RIGHT);
 								node.setBlock(x, y, HILL_TOP);
 							}
-						}
-						else if(y>floor && node.getBlock(x, y)!=HILL_TOP_LEFT
-								&& node.getBlock(x, y)!=HILL_TOP_RIGHT &&  node.getBlock(x, y)!=HILL_TOP){
-							if(node.getBlock(x, y)==0 ||node.getBlock(x, y)==HILL_FILL){
-							//if(node.getBlock(x, y)!=-127 && node.getBlock(x, y)!=GROUND &&
-							//		node.getBlock(x, y)!=HILL_FILL){
-								//System.out.println("What am I? : "+node.getBlock(x, y));
-								if(x==xo && node.getBlock(x, y)!=HILL_FILL){
+						} else if (y > floor
+								&& node.getBlock(x, y) != HILL_TOP_LEFT
+								&& node.getBlock(x, y) != HILL_TOP_RIGHT
+								&& node.getBlock(x, y) != HILL_TOP) {
+							if (node.getBlock(x, y) == 0
+									|| node.getBlock(x, y) == HILL_FILL) {
+								// if(node.getBlock(x, y)!=-127 &&
+								// node.getBlock(x, y)!=GROUND &&
+								// node.getBlock(x, y)!=HILL_FILL){
+
+								// Need Hill Fill or it's crazy time
+								if (x == xo && node.getBlock(x, y) != HILL_FILL) {
 									node.setBlock(x, y, HILL_LEFT);
-								}
-								else if(x==(xo+length-1) && node.getBlock(x, y)!=HILL_FILL){
+								} else if (x == (xo + length - 1)
+										&& node.getBlock(x, y) != HILL_FILL) {
 									node.setBlock(x, y, HILL_RIGHT);
-								}
-								else{
+								} else {
 									node.setBlock(x, y, HILL_FILL);
 								}
 							}
 						}
-						
+
 					}
 				}
 			}
 		}
-		
-		//Helper methods (MIGHT WANT TO HAVE THESE RETURN INTS SO THAT WE KNOW HOW MANY OF THE SETS WERE UNECESSARY
-		//Basically sets the node to FLAT type
-		public void flattenLevelNode(LevelNode node, int xo, int maxLength){
-			
-			//node.setBlock(0, 1, COIN);
-			//System.out.println("Flattening a hill");
-			int length = random.nextInt(5);
-			if (length > maxLength)
-				length = maxLength;
-			
-			
-			
-			int floor = height - 1 - random.nextInt(4);
-			for (int x = xo; x < xo + length; x++) {
-				boolean hitFloor=false;
-				for (int y = height; y >2; y--) {
-					if(!hitFloor){
-						if(node.getBlock(x,y)==-127){
-							hitFloor=true;
+	}
+
+	// Basically sets the node to FLAT type
+	public void flattenLevelNode(LevelNode node, int xo, int maxLength) {
+
+		// Only do it when you have hills totally in this area
+		boolean doIt = false;
+
+		int[] hillCount = new int[height];
+
+		for (int x = 0; x < 10; x++) {
+			for (int y = 0; y < 10; y++) {
+				if (node.getBlock(x, y) == HILL_TOP_LEFT
+						|| node.getBlock(x, y) == HILL_TOP_RIGHT) {
+					hillCount[y] += 2;
+				}
+			}
+		}
+
+		for (int i = 0; i < hillCount.length; i++) {
+			if (hillCount[i] % 2 != 0) {
+				doIt = false;
+			}
+		}
+
+		if (doIt) {
+			for (int x = 0; x < 10; x++) {
+
+				int floor = 0;
+				for (int yf = 0; yf < height; yf++) {
+					if (node.getBlock(x, yf) == -127
+							|| node.getBlock(x, yf) == RIGHT_GRASS_EDGE
+							|| node.getBlock(x, yf) == LEFT_GRASS_EDGE
+							|| node.getBlock(x, yf) == RIGHT_UP_GRASS_EDGE
+							|| node.getBlock(x, yf) == LEFT_UP_GRASS_EDGE
+							|| node.getBlock(x, yf) == RIGHT_POCKET_GRASS
+							|| node.getBlock(x, yf) == LEFT_POCKET_GRASS
+							|| node.getBlock(x, yf) == GROUND
+							) {
+						if (floor == 0) {
+							floor = yf;
 						}
-							
 					}
-					else{
-						node.setBlock(x,y,(byte)0);
+				}
+
+				if (floor != 0) {
+					for (int y = floor - 1; y > 2; y--) {
+
+						node.setBlock(x, y, (byte) 0);
 					}
 				}
 			}
 		}
-		
-		
-		public void alterJumps(LevelNode levelNode, boolean increase){
-			if(increase){
-				//System.out.println("Increasing jumps");
-				//levelNode.setBlock(0,0,BLOCK_EMPTY);
-				makeJump(levelNode, random.nextInt(3)+1,5);
+	}
+
+	public void alterJumps(LevelNode levelNode, boolean increase) {
+		if (increase) {
+			// System.out.println("Increasing jumps");
+			levelNode.setBlock(0, 0, BLOCK_EMPTY);
+
+			int randomStart = random.nextInt(7) + 2;
+
+			makeJump(levelNode, randomStart, 5);
+		} else {
+			// System.out.println("Decreasing jumps");
+			levelNode.setBlock(0, 1, BLOCK_EMPTY);
+			fillInJumps(levelNode, 0, 10);
+		}
+	}
+
+	// Helper methods
+	public void fillInJumps(LevelNode node, int xo, int maxLength) {
+
+		int i = xo;
+		int j = 0;
+		int floor = 0;
+		boolean foundGround = false;
+		while (i < xo + maxLength && !foundGround) {
+			while (j < height && !foundGround) {
+				if (node.getBlock(i, j) == -127) {
+					foundGround = true;
+					floor = j;
+				}
+
+				j++;
 			}
-			else{
-				//System.out.println("Decreasing jumps");
-				//levelNode.setBlock(0,1,BLOCK_EMPTY);
-				fillInJumps(levelNode, 0, 10);
+			i++;
+		}
+
+		if (foundGround) {
+			for (int x = xo; x < xo + maxLength; x++) {
+				for (int y = 0; y < height; y++) {
+					if (y == floor) {
+						if (node.getBlock(x, y) == 0
+								|| node.getBlock(x, y) == RIGHT_UP_GRASS_EDGE
+								|| node.getBlock(x, y) == LEFT_UP_GRASS_EDGE
+								) {
+							node.setBlock(x, y, (byte) -127);
+						}
+					} else if (y > floor) {
+						if (node.getBlock(x, y) == 0
+								|| node.getBlock(x, y) == RIGHT_GRASS_EDGE
+								|| node.getBlock(x, y) == RIGHT_UP_GRASS_EDGE
+								|| node.getBlock(x, y) == LEFT_GRASS_EDGE
+								|| node.getBlock(x, y) == LEFT_UP_GRASS_EDGE
+								|| node.getBlock(x, y)==HILL_LEFT
+								|| node.getBlock(x, y)==HILL_RIGHT) {
+							node.setBlock(x, y, GROUND);
+						}
+					}
+				}
 			}
 		}
-		
-		//Helper methods
-		public void fillInJumps(LevelNode node, int xo, int maxLength){
-			
-			int i = xo;
-			int j =0;
-			int floor = 0;
-			boolean foundGround =false;
-			while(i<xo+maxLength && !foundGround){
-				while(j<height &&!foundGround){
-					if(node.getBlock(i, j)==-127){
-						foundGround=true;
-						floor=j;
+	}
+
+	// Helper methods
+	public void makeJump(LevelNode node, int xo, int maxLength) {
+		if (maxLength < 2 || xo < 1) {
+			return;
+		}
+
+		int length = random.nextInt(10 - xo);
+
+		if (length > maxLength) {
+			length = maxLength;
+		}
+
+		int floor = height - 1;
+
+		boolean doIt = true;
+		// System.out.println("I GOT HERE!");
+		for (int x = xo; x < xo + length; x++) {
+			boolean foundGround = false;
+			int y = 2;
+			while (y < height && !foundGround) {
+				if (!foundGround && node.getBlock(x, y) != 0) {
+					if (node.getBlock(x, y) == -127) {
+						foundGround = true;
+						// Added this
+						floor = y;
+					} else {
+						doIt = false;
 					}
-					
-					j++;
 				}
-				i++;
+
+				y++;
 			}
-			
-			if(foundGround){
-				for (int x = xo; x < xo + maxLength; x++) {
-					for (int y = 0; y < height; y++) {
-						if(y==floor){
-							if(node.getBlock(x, y)==0){
-								node.setBlock(x, y, (byte)-127);
+
+		}
+
+		if (node.getBlock(xo, floor) == 0
+				|| node.getBlock(xo + length, floor) == 0
+				|| node.getBlock(xo - 1, floor) == 0
+				|| node.getBlock(xo + length + 1, floor) == 0) {
+			// Don't do it! There's already a jump there
+		} else if (doIt) {
+
+			for (int x = xo - 1; x < xo + length; x++) {
+				boolean foundGround = false;
+				for (int y = 0; y < height; y++) {
+					if (x != xo - 1 && x != xo + length - 1) {
+						if (y <= floor) {
+							if (!foundGround) {
+								if (node.getBlock(x, y) == -127) {
+									foundGround = true;
+									node.setBlock(x, y, (byte) 0);
+								}
+							} else {
+								node.setBlock(x, y, (byte) 0);
 							}
+							// node.setBlock(x, y,(byte)0);
 						}
-						else if(y>floor){
-							if(node.getBlock(x, y)==0 || node.getBlock(x, y)==RIGHT_GRASS_EDGE
-						|| node.getBlock(x, y)==RIGHT_UP_GRASS_EDGE
-						|| node.getBlock(x, y)==LEFT_GRASS_EDGE
-						|| node.getBlock(x, y)==LEFT_UP_GRASS_EDGE){
-								node.setBlock(x, y, GROUND);
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		//Helper methods
-		public void makeJump(LevelNode node, int xo, int maxLength){
-			int length = random.nextInt(5)+2;
-			if (length > maxLength)
-				length = maxLength;
-					
-			
-			int floor = height - 1;
-			if(node.getBlock(xo, floor)==0 || node.getBlock(xo+length, floor)==0
-					||node.getBlock(xo-1, floor)==0 || node.getBlock(xo+length+1, floor)==0){
-				//Don't do it! There's already a jump there
-			}
-			else{
-				
-				for (int x = xo-1; x < xo + length; x++) {
-					boolean foundGround=false;
-					for (int y = 0; y < height; y++) {
-						if(x!=xo-1 && x!=xo+length-1){
-							if (y <= floor) {
-								if(!foundGround){
-									if(node.getBlock(x, y)==-127){
-										foundGround=true;
-										node.setBlock(x, y,(byte)0);
+					} else if (x == xo - 1) {
+						if (!foundGround) {
+							// TODO Figure out what to di if it's a
+							// right_up_grass_edge
+							if (node.getBlock(x, y) == -127) {
+								foundGround = true;
+								node.setBlock(x, y, RIGHT_UP_GRASS_EDGE);
+							} else if (node.getBlock(x, y) == RIGHT_UP_GRASS_EDGE) {
+								foundGround = true;
+
+								if (xo != 1) {
+									if (node.getBlock(xo - 2, y) != -127) {
+										node.setBlock(x, y, (byte) 0);
 									}
 								}
-								else{
-									node.setBlock(x, y,(byte)0);
-								}
-								//node.setBlock(x, y,(byte)0);
+							} else if (node.getBlock(x, y) == LEFT_UP_GRASS_EDGE) {
+								foundGround = true;
+								node.setBlock(x, y, (byte) 0);
+							}
+						} else {
+							if (node.getBlock(x, y) != -127) {
+								node.setBlock(x, y, RIGHT_GRASS_EDGE);
+							} else if (node.getBlock(x, y) == -127) {
+								node.setBlock(x, y, RIGHT_UP_GRASS_EDGE);
 							}
 						}
-						else if(x==xo-1){
-							if(!foundGround){
-								if(node.getBlock(x, y)==-127){
-									foundGround=true;
-									node.setBlock(x, y,RIGHT_UP_GRASS_EDGE);
-								}
+					} else if (x == xo + length - 1) {
+						if (!foundGround) {
+							// TODO Figure out what to di if it's a
+							// left_up_grass_edge
+							if (node.getBlock(x, y) == -127) {
+								foundGround = true;
+								node.setBlock(x, y, LEFT_UP_GRASS_EDGE);
+							} else if (node.getBlock(x, y) == LEFT_UP_GRASS_EDGE) {
+								foundGround = true;
+							} else if (node.getBlock(x, y) == RIGHT_UP_GRASS_EDGE) {
+								foundGround = true;
+								node.setBlock(x, y, (byte) 0);
 							}
-							else{
-								node.setBlock(x, y,RIGHT_GRASS_EDGE);
-							}
-						}
-						else if(x==xo+length-1){
-							if(!foundGround){
-								if(node.getBlock(x, y)==-127 ){
-									foundGround=true;
-									node.setBlock(x, y,LEFT_UP_GRASS_EDGE);
-								}
-							}
-							else{
-								node.setBlock(x, y,LEFT_GRASS_EDGE);
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		
-		
-		
-		public void alterTubes(LevelNode levelNode, boolean increase){
-			if(levelNode!=null){
-				if(increase){
-					//System.out.println("Building Tube");
-					//levelNode.setBlock(0, 0, TUBE_TOP_LEFT);
-					buildTubesNode(levelNode, random.nextInt(2), 2);
-				}
-				else{
-					//levelNode.setBlock(0, 0, TUBE_TOP_RIGHT);
-					//System.out.println("Squishing Tube");
-					squishDownTubes(levelNode, 0, 10);
-				}
-			}
-		}
-		
-		
-		//Makes tubes
-		private int buildTubesNode(LevelNode node, int xo, int maxLength) {
-			int length = random.nextInt(5) + 5;
-			if (length > maxLength)
-				length = maxLength;
 
-			int xTube = xo + random.nextInt(9);
-			
-			//Fine the floor
-			int i=xTube;
-			int j=0;
-			int floor = 0;
-			boolean foundGround =false;
-			while(i<xTube+2&& !foundGround){
-				while(j<height &&!foundGround){
-					if(node.getBlock(i, j)==-127 && i<9){
-						foundGround=true;
-						floor=j;
+						}
+
+						else {
+							node.setBlock(x, y, LEFT_GRASS_EDGE);
+						}
 					}
-					
-					j++;
 				}
-				i++;
 			}
-			
-			
-			if(floor!=0){
-			
+		}
+	}
+
+	public void alterTubes(LevelNode levelNode, boolean increase) {
+		if (levelNode != null) {
+			if (increase) {
+				// System.out.println("Building Tube");
+				levelNode.setBlock(0, 0, TUBE_TOP_LEFT);
+				buildTubesNode(levelNode, random.nextInt(7), 2);
+			} else {
+				levelNode.setBlock(0, 0, TUBE_TOP_RIGHT);
+				// System.out.println("Squishing Tube");
+				squishDownTubes(levelNode, 0, 10);
+			}
+		}
+	}
+
+	// Makes tubes
+	private int buildTubesNode(LevelNode node, int xo, int maxLength) {
+		int length = random.nextInt(5) + 5;
+		if (length > maxLength)
+			length = maxLength;
+
+		int xTube = xo;
+
+		// Fine the floor
+		int floor = 0;
+		boolean foundGround = false;
+		boolean doEet = true;
+		for (int i = xTube; i < xTube + 2; i++) {
+			for (int j = 0; j < height; j++) {
+				if (!foundGround && (node.getBlock(i, j) == -127)) {
+					foundGround = true;
+					floor = j;
+				}
+				if (node.getBlock(i, j) == BLOCK_EMPTY
+						|| node.getBlock(i, j) == BLOCK_COIN
+						|| node.getBlock(i, j) == BLOCK_POWERUP
+						|| node.getBlock(i, j) == TUBE_TOP_LEFT
+						|| node.getBlock(i, j) == TUBE_TOP_RIGHT
+						|| node.getBlock(i, j) == TUBE_SIDE_LEFT
+						|| node.getBlock(i, j) == TUBE_TOP_RIGHT
+						|| node.getBlock(i, j) == (byte) (14 + 0 * 16)
+						|| node.getBlock(i, j) == (byte) (14 + 1 * 16)
+						|| node.getBlock(i, j) == (byte) (14 + 2 * 16)
+						|| node.getBlock(i, j) == HILL_FILL
+						|| node.getBlock(i, j) == HILL_TOP
+						|| node.getBlock(i, j) == HILL_RIGHT
+						|| node.getBlock(i, j) == HILL_LEFT
+						|| node.getBlock(i, j) == HILL_TOP_RIGHT
+						|| node.getBlock(i, j) == HILL_TOP_LEFT) {
+					doEet = false;
+				}
+
+			}
+		}
+
+		if (floor != 0 && doEet) {
+
 			int tubeHeight = floor - random.nextInt(2) - 2;
-			
-			
+
 			boolean canBuild = true;
-			for(int a=xTube; a<xTube+2; a++){
-				for(int b=0; b<floor; b++){
-					if(node.getBlock(a, b)!=0){
-						canBuild=false;
+			for (int a = xTube; a < xTube + 2; a++) {
+				for (int b = 0; b < floor; b++) {
+					if (node.getBlock(a, b) != 0) {
+						canBuild = false;
 					}
 				}
 			}
-			
-			
-			if(canBuild){
-				
-			
+
+			if (canBuild) {
+
 				for (int x = xo; x < 10; x++) {
-					
-					if (x == xTube && random.nextInt(2)==1) {
-						node.setSpriteTemplate(x, tubeHeight, new SpriteTemplate(
-								Enemy.ENEMY_FLOWER, false));
+
+					if (x == xTube && random.nextInt(2) == 1) {
+						node.setSpriteTemplate(x, tubeHeight,
+								new SpriteTemplate(Enemy.ENEMY_FLOWER, false));
 						ENEMIES++;
 					}
-		
+
 					for (int y = 0; y < height; y++) {
-						if (y >= floor && (x==xTube ||x==xTube+1)) {
-							//Had this in here at first as I copied it from the original, turns out we don't need it
-							if(y==floor){
-								//node.setBlock(x, y, (byte)-127);
+						if (y >= floor && (x == xTube || x == xTube + 1)) {
+							// Had this in here at first as I copied it from the
+							// original, turns out we don't need it
+							if (y == floor) {
+								// node.setBlock(x, y, (byte)-127);
+							} else {
+								// node.setBlock(x, y, GROUND);
 							}
-							else{
-								//node.setBlock(x, y, GROUND);
-							}
-		
+
 						} else {
-							if ((x == xTube || x == xTube + 1) && y >= tubeHeight) {
+							if ((x == xTube || x == xTube + 1)
+									&& y >= tubeHeight) {
 								int xPic = 10 + x - xTube;
-		
+
 								if (y == tubeHeight) {
 									// tube top
-									if(x==xTube){
+									if (x == xTube) {
 										node.setBlock(x, y, TUBE_TOP_LEFT);
-									}
-									else if(x==xTube+1){
+									} else if (x == xTube + 1) {
 										node.setBlock(x, y, TUBE_TOP_RIGHT);
 									}
 								} else {
@@ -841,89 +994,118 @@ public class MyLevel extends Level {
 					}
 				}
 			}
-			}
-			return length;
 		}
-		
-		//Squishes the first tube it sees
-		private void squishDownTubes(LevelNode node, int xo, int maxLength){
-			int pipeX=0;
-			boolean foundTube=false;
-			
-			
-			for(int x =xo;x<xo+maxLength; x++){
-				for(int y=0; y<height; y++){
-					if(!foundTube){
-						if(node.getBlock(x, y)==Level.TUBE_TOP_LEFT && x+1<10){
-							foundTube=true;
-							pipeX=x;
-							node.setBlock(x,y,(byte)0);
-						}
-						
-					}
-					else{
-						if(x==pipeX || x==pipeX+1){
-							if(node.getBlock(x, y)==TUBE_TOP_RIGHT
-									|| node.getBlock(x, y)==TUBE_SIDE_LEFT ||
-									node.getBlock(x, y)==TUBE_SIDE_RIGHT){
-								node.setBlock(x,y,(byte)0);
-							}
-								
-						}
-					}
-				}
-			}
-			
-			
-		}
-		
-		public void alterCannons(LevelNode levelNode, boolean increase){
-			if(levelNode!=null){
-				if(increase){
-					//levelNode.setBlock(0,0,(byte) (14 + 1 * 16));
-					//System.out.println("building cannons");
-					buildCannonsNode(levelNode, random.nextInt(5), random.nextInt(5));
-				}
-				else{
-					//levelNode.setBlock(0,1,(byte) (14 + 1 * 16));
-					//System.out.println("squishing cannons");
-					squishDownCannons(levelNode, 0, 10);
-				}
-			}
-		}
-		
-		//Builds Cannons
-		private int buildCannonsNode(LevelNode node, int xo, int maxLength) {
-			int length = random.nextInt(10) + 2;
-			if (length > maxLength)
-				length = maxLength;
+		return length;
+	}
 
-			//Find the ground, use that to determine where the cannon should be
-			int i=xo;
-			int j=0;
-			int floor = 0;
-			boolean foundGround =false;
-			while(i<xo+maxLength && !foundGround){
-				while(j<height &&!foundGround){
-					if(node.getBlock(i, j)==-127){
-						foundGround=true;
-						floor=j;
+	// Squishes the first tube it sees
+	private void squishDownTubes(LevelNode node, int xo, int maxLength) {
+		int pipeX = 0;
+		boolean foundTube = false;
+
+		for (int x = xo; x < xo + maxLength; x++) {
+			for (int y = 0; y < height; y++) {
+				if (!foundTube) {
+					if (node.getBlock(x, y) == Level.TUBE_TOP_LEFT
+							&& x + 1 < 10) {
+						foundTube = true;
+						pipeX = x;
+						node.setBlock(x, y, (byte) 0);
+						node.setSpriteTemplate(x, y, null);
 					}
-					
-					j++;
+
+				} else {
+					if (x == pipeX || x == pipeX + 1) {
+						if (node.getBlock(x, y) == TUBE_TOP_RIGHT
+								|| node.getBlock(x, y) == TUBE_SIDE_LEFT
+								|| node.getBlock(x, y) == TUBE_SIDE_RIGHT) {
+							node.setBlock(x, y, (byte) 0);
+
+						}
+						node.setSpriteTemplate(x, y, null);
+					}
 				}
-				i++;
 			}
-			
-			//The x position of the cannon
-			int xCannon = xo + 1 + random.nextInt(4);
+		}
+
+	}
+
+	public void alterCannons(LevelNode levelNode, boolean increase) {
+		if (levelNode != null) {
+			if (increase) {
+				levelNode.setBlock(0, 0, (byte) (14 + 1 * 16));
+				// System.out.println("building cannons");
+				buildCannonsNode(levelNode, random.nextInt(5),
+						random.nextInt(5));
+			} else {
+				levelNode.setBlock(0, 1, (byte) (14 + 1 * 16));
+				// System.out.println("squishing cannons");
+				squishDownCannons(levelNode, 0, 10);
+			}
+		}
+	}
+
+	// Builds Cannons
+	private int buildCannonsNode(LevelNode node, int xo, int maxLength) {
+		int length = random.nextInt(10) + 2;
+		if (length > maxLength)
+			length = maxLength;
+		// System.out.println("I WANT TO BUILD A CANNON");
+		// Find the ground, use that to determine where the cannon should be
+
+		int floor = 0;
+
+		boolean foundGround = false;
+		boolean doEet = true;
+
+		for (int j = 0; j < height; j++) {
+			if (!foundGround && (node.getBlock(xo, j) == -127)) {
+				foundGround = true;
+				floor = j;
+			}
+			if (node.getBlock(xo, j) == BLOCK_EMPTY
+					|| node.getBlock(xo, j) == BLOCK_COIN
+					|| node.getBlock(xo, j) == BLOCK_POWERUP
+					|| node.getBlock(xo, j) == TUBE_TOP_LEFT
+					|| node.getBlock(xo, j) == TUBE_TOP_RIGHT
+					|| node.getBlock(xo, j) == TUBE_SIDE_LEFT
+					|| node.getBlock(xo, j) == TUBE_TOP_RIGHT
+					|| node.getBlock(xo, j) == (byte) (14 + 0 * 16)
+					|| node.getBlock(xo, j) == (byte) (14 + 1 * 16)
+					|| node.getBlock(xo, j) == (byte) (14 + 2 * 16)
+					|| node.getBlock(xo, j) == HILL_FILL
+					|| node.getBlock(xo, j) == HILL_TOP
+					|| node.getBlock(xo, j) == HILL_RIGHT
+					|| node.getBlock(xo, j) == HILL_LEFT
+					|| node.getBlock(xo, j) == HILL_TOP_RIGHT
+					|| node.getBlock(xo, j) == HILL_TOP_LEFT) {
+				doEet = false;
+			}
+
+		}
+		int cannonHeight = floor - (random.nextInt(4) + 1);
+
+		for (int i = xo - 1; i < xo + 2; i++) {
+			if (node.getBlock(i, cannonHeight) == BLOCK_EMPTY
+					|| node.getBlock(i, cannonHeight) == BLOCK_COIN
+					|| node.getBlock(i, cannonHeight) == BLOCK_POWERUP
+					|| node.getBlock(i, cannonHeight) == TUBE_TOP_LEFT
+					|| node.getBlock(i, cannonHeight) == TUBE_TOP_RIGHT
+					|| node.getBlock(i, cannonHeight) == TUBE_SIDE_LEFT
+					|| node.getBlock(i, cannonHeight) == TUBE_TOP_RIGHT) {
+				doEet = false;
+			}
+		}
+
+		if (doEet && foundGround) {
+			// The x position of the cannon
+			System.out.println("I MADE A CANNON");
+			int xCannon = xo;
 			for (int x = xo; x < xo + length; x++) {
-				
-				int cannonHeight = floor - random.nextInt(4) - 1;
 
 				for (int y = 0; y < height; y++) {
 					if (y >= floor) {
-						//This is the ground, don't put blocks there
+						// This is the ground, don't put blocks there
 					} else {
 						if (x == xCannon && y >= cannonHeight) {
 							if (y == cannonHeight) {
@@ -933,108 +1115,112 @@ public class MyLevel extends Level {
 							} else {
 								node.setBlock(x, y, (byte) (14 + 2 * 16));
 							}
-						}
-					}
-				}
-			}
 
-			return length;
-		}
-		
-		
-		private void squishDownCannons(LevelNode node, int xo, int maxLength){
-			int pipeX=0;
-			boolean foundCannon=false;
-			
-			
-			for(int x =xo;x<xo+maxLength; x++){
-				for(int y=0; y<height; y++){
-					if(!foundCannon){
-						if(node.getBlock(x, y)== (byte) (14 + 0 * 16)
-								|| node.getBlock(x, y)==(byte) (14 + 1 * 16) ||
-								node.getBlock(x, y)==(byte) (14 + 2 * 16)){
-							foundCannon=true;
-							pipeX=x;
-							node.setBlock(x,y,(byte)0);
-						}
-						
-					}
-					else{
-						if(x==pipeX ){
-							if(node.getBlock(x, y)== (byte) (14 + 0 * 16)
-									|| node.getBlock(x, y)==(byte) (14 + 1 * 16) ||
-									node.getBlock(x, y)==(byte) (14 + 2 * 16)){
-								node.setBlock(x,y,(byte)0);
-							}
-								
+							node.setSpriteTemplate(x, y, null);
 						}
 					}
 				}
 			}
-			
-			
 		}
-		
-		public void alterEnemies(LevelNode levelNode, boolean increase){
-			if(levelNode!=null){
-				if(increase){
-					//System.out.println("I WANT to add an enemy");
-					boolean iSetAnEnemy = false;
-					int x =0;
-					while(!iSetAnEnemy && x<10){
-						int y=15-4-random.nextInt(3);
-						while(!iSetAnEnemy && y<height){
-							if(levelNode.getSprite(x, y)==null){//levelNode.getBlock(x, y)==BLOCK_EMPTY && levelNode.getBlock(x, y+1)!=BLOCK_EMPTY){
-								//Add a single enemy
-								//System.out.println("I added an enemy");
-								addEnemyLineNode(levelNode, x,1,y);
-								iSetAnEnemy=true;
-							}
-							y++;
-						}
-						x++;
+		return length;
+	}
+
+	private void squishDownCannons(LevelNode node, int xo, int maxLength) {
+		int pipeX = 0;
+		boolean foundCannon = false;
+
+		for (int x = xo; x < xo + maxLength; x++) {
+			for (int y = 0; y < height; y++) {
+				if (!foundCannon) {
+					if (node.getBlock(x, y) == (byte) (14 + 0 * 16)
+							|| node.getBlock(x, y) == (byte) (14 + 1 * 16)
+							|| node.getBlock(x, y) == (byte) (14 + 2 * 16)) {
+						foundCannon = true;
+						pipeX = x;
+						node.setBlock(x, y, (byte) 0);
 					}
-				}
-				else{
-					//System.out.println("Removing enemy");
-					removeFirstEnemyISee(levelNode, 0, 10);
+
+				} else {
+					if (x == pipeX) {
+						if (node.getBlock(x, y) == (byte) (14 + 0 * 16)
+								|| node.getBlock(x, y) == (byte) (14 + 1 * 16)
+								|| node.getBlock(x, y) == (byte) (14 + 2 * 16)) {
+							node.setBlock(x, y, (byte) 0);
+						}
+
+					}
 				}
 			}
 		}
-		
-		//The name is a horribly red herring, it just makes a single enemy
-		private void addEnemyLineNode(LevelNode node, int x0, int x1, int y) {
-			for (int x = x0; x < x1; x++) {
-				//What type of enemy it'll be
-				int type = random.nextInt(4);
-					
-				//Make that enemy!
+
+	}
+
+	public void alterEnemies(LevelNode levelNode, boolean increase) {
+		if (levelNode != null) {
+			if (increase) {
+				// System.out.println("I WANT to add an enemy");
+				boolean iSetAnEnemy = false;
+				int x = 0;
+				while (!iSetAnEnemy && x < 10) {
+					int y = 15 - 4 - random.nextInt(3);
+					while (!iSetAnEnemy && y < height) {
+						if (levelNode.getBlock(x, y) == 0
+								&& levelNode.getSprite(x, y) == null) {// levelNode.getBlock(x,
+																		// y)==BLOCK_EMPTY
+																		// &&
+																		// levelNode.getBlock(x,
+																		// y+1)!=BLOCK_EMPTY){
+							// Add a single enemy
+							addEnemyLineNode(levelNode, x, 1, y);
+							iSetAnEnemy = true;
+						}
+						y++;
+					}
+					x++;
+				}
+			} else {
+				// System.out.println("Removing enemy");
+				removeFirstEnemyISee(levelNode, 0, 10);
+			}
+		}
+	}
+
+	// The name is a horribly red herring, it just makes a single enemy
+	private void addEnemyLineNode(LevelNode node, int x0, int x1, int y) {
+		for (int x = x0; x < x1; x++) {
+			// What type of enemy it'll be
+			int type = random.nextInt(4);
+			if (node.getBlock(x, y) == 0) {
+				// Make that enemy!
 				node.setSpriteTemplate(x, y,
 						new SpriteTemplate(type,
 								random.nextInt(35) < difficulty));
 				ENEMIES++;
-			
 			}
+
 		}
-		
-		public void removeFirstEnemyISee(LevelNode node, int xo, int maxLength){
-			boolean destroyedAnEnemy = false;
-			int x=xo;
-			while(x<xo+maxLength && !destroyedAnEnemy){
-				int y =0;
-				while(y<height && !destroyedAnEnemy){
-					if(node.getSprite(x, y)!=null){
-						node.setSpriteTemplate(x, y, null);
-						destroyedAnEnemy=true;
-					}
-					y++;
+	}
+
+	public void removeFirstEnemyISee(LevelNode node, int xo, int maxLength) {
+		boolean destroyedAnEnemy = false;
+		int x = xo;
+		while (x < xo + maxLength && !destroyedAnEnemy) {
+			int y = 0;
+			while (y < height && !destroyedAnEnemy) {
+				if (node.getSprite(x, y) != null) {
+					node.setSpriteTemplate(x, y, null);
+					destroyedAnEnemy = true;
 				}
-				x++;
+				y++;
 			}
+			x++;
 		}
+	}
 
 	/**
-	 * Decrease the temperature based on the the fraction of the number of iterations / max iterations
+	 * Decrease the temperature based on the the fraction of the number of
+	 * iterations / max iterations
+	 * 
 	 * @param temp
 	 * @param progress
 	 * @return
@@ -1044,10 +1230,11 @@ public class MyLevel extends Level {
 	}
 
 	/**
-	 * A higher score represents a better level. Currently a sum of variance and difficulty.
-	 * May want to change this?
+	 * A higher score represents a better level. Currently a sum of variance and
+	 * difficulty. May want to change this?
 	 * 
-	 * @param LevelNode the head of the LevelNode list
+	 * @param LevelNode
+	 *            the head of the LevelNode list
 	 * @return A integer representation of how good this level is.
 	 */
 	public int evalLevel(LevelNode head) {
@@ -1065,10 +1252,12 @@ public class MyLevel extends Level {
 		}
 		return variance + totalDifficulty;
 	}
-	
+
 	/**
 	 * Take the head of the level node list and concatenate all the maps
-	 * @param head The head node of the level node list
+	 * 
+	 * @param head
+	 *            The head node of the level node list
 	 * @return Concatenated maps
 	 */
 	public LevelResult combineLevelNodes(LevelNode head) {
@@ -1076,50 +1265,52 @@ public class MyLevel extends Level {
 		SpriteTemplate[][] resultSprites = new SpriteTemplate[width][height];
 		int elementCount = 0;
 		LevelNode curNode = head;
-		while(curNode != null) {
+		while (curNode != null) {
 			byte[][] curNodeMap = curNode.getMap();
 			SpriteTemplate[][] curNodeSprites = curNode.getSprites();
-			System.arraycopy(curNodeMap, 0, resultMap, elementCount, curNodeMap.length);
-			System.arraycopy(curNodeSprites, 0, resultSprites, elementCount, curNodeSprites.length);
+			System.arraycopy(curNodeMap, 0, resultMap, elementCount,
+					curNodeMap.length);
+			System.arraycopy(curNodeSprites, 0, resultSprites, elementCount,
+					curNodeSprites.length);
 			elementCount += curNodeMap.length;
 			curNode = curNode.getNextNode();
 		}
 		return new LevelResult(resultMap, resultSprites);
 	}
-	
+
 	/**
-	 * We will probably need to keep track of the map and the sprites, so using this class to keep track
-	 * of results. 
-	 *
+	 * We will probably need to keep track of the map and the sprites, so using
+	 * this class to keep track of results.
+	 * 
 	 */
 	private class LevelResult {
 		/**
 		 * The map
 		 */
 		private byte[][] map;
-		
+
 		/**
 		 * The sprites
 		 */
 		private SpriteTemplate[][] sprites;
-		
+
 		public LevelResult(byte[][] map, SpriteTemplate[][] sprites) {
 			this.map = map;
 			this.sprites = sprites;
 		}
-		
+
 		public void setMap(byte[][] map) {
 			this.map = map;
 		}
-		
+
 		public void setSprites(SpriteTemplate[][] sprites) {
 			this.sprites = sprites;
 		}
-		
+
 		public byte[][] getMap() {
 			return this.map;
 		}
-		
+
 		public SpriteTemplate[][] getSprites() {
 			return this.sprites;
 		}
@@ -1139,12 +1330,12 @@ public class MyLevel extends Level {
 		// create all of the medium sections
 		while (length < width - 64) {
 			// length += buildZone(length, width - length);
-			 length += buildStraight(length, width-length, false);
+			length += buildStraight(length, width - length, false);
 			// length += buildStraight(length, width-length, false);
 			// length += buildHillStraight(length, width-length);
 			// length += buildJump(length, width-length);
 			// length += buildTubes(length, width-length);
-			//length += buildCannons(length, width - length);
+			// length += buildCannons(length, width - length);
 		}
 
 		// set the end piece
