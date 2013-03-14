@@ -743,10 +743,10 @@ public class MyLevel extends Level {
 		if (levelNode != null) {
 			if (increase) {
 				// System.out.println("Building hill");
-				levelNode.setBlock(1, 0, COIN);
+			//	levelNode.setBlock(1, 0, COIN);
 				buildHillSansEnemies(levelNode, random.nextInt(5), 5);
 			} else {
-				levelNode.setBlock(1, 1, COIN);
+				//levelNode.setBlock(1, 1, COIN);
 				flattenLevelNode(levelNode, random.nextInt(5), 5);
 			}
 		}
@@ -914,14 +914,14 @@ public class MyLevel extends Level {
 	public void alterJumps(LevelNode levelNode, boolean increase) {
 		if (increase) {
 			// System.out.println("Increasing jumps");
-			levelNode.setBlock(0, 0, BLOCK_EMPTY);
+			//levelNode.setBlock(0, 0, BLOCK_EMPTY);
 
 			int randomStart = random.nextInt(7) + 2;
 
 			makeJump(levelNode, randomStart, 5);
 		} else {
 			// System.out.println("Decreasing jumps");
-			levelNode.setBlock(0, 1, BLOCK_EMPTY);
+			//levelNode.setBlock(0, 1, BLOCK_EMPTY);
 			fillInJumps(levelNode, 0, 10);
 		}
 	}
@@ -1083,10 +1083,10 @@ public class MyLevel extends Level {
 		if (levelNode != null) {
 			if (increase) {
 				// System.out.println("Building Tube");
-				levelNode.setBlock(0, 0, TUBE_TOP_LEFT);
+				//levelNode.setBlock(0, 0, TUBE_TOP_LEFT);
 				buildTubesNode(levelNode, random.nextInt(7), 2);
 			} else {
-				levelNode.setBlock(0, 0, TUBE_TOP_RIGHT);
+				//levelNode.setBlock(0, 0, TUBE_TOP_RIGHT);
 				// System.out.println("Squishing Tube");
 				squishDownTubes(levelNode, 0, 10);
 			}
@@ -1226,12 +1226,12 @@ public class MyLevel extends Level {
 	public void alterCannons(LevelNode levelNode, boolean increase) {
 		if (levelNode != null) {
 			if (increase) {
-				levelNode.setBlock(0, 0, (byte) (14 + 1 * 16));
+				//levelNode.setBlock(0, 0, (byte) (14 + 1 * 16));
 				// System.out.println("building cannons");
 				buildCannonsNode(levelNode, random.nextInt(5),
 						random.nextInt(5));
 			} else {
-				levelNode.setBlock(0, 1, (byte) (14 + 1 * 16));
+				//levelNode.setBlock(0, 1, (byte) (14 + 1 * 16));
 				// System.out.println("squishing cannons");
 				squishDownCannons(levelNode, 0, 10);
 			}
